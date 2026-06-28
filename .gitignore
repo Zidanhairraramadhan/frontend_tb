@@ -1,0 +1,26 @@
+# =========================================================================
+# MusicLink Frontend — GitIgnore Configuration
+# =========================================================================
+
+# ── Dependencies ──
+node_modules/
+
+# ── Build Output ──
+dist/
+
+# ── Environment Variables ──
+.env
+.env.local
+.env.development.local
+.env.production.local
+
+# ── Operating System Files ──
+.DS_Store
+Thumbs.db
+
+# ── IDEs and Editors ──
+.idea/
+.vscode/
+*.suo
+*.sw?
+*.log

@@ -1,0 +1,169 @@
+/* =============================================
+   Settings Page
+   ============================================= */
+
+.settings-page {
+  max-width: 720px;
+}
+
+.settings-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-xl);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-md);
+}
+
+.settings-section-header {
+  margin-bottom: var(--space-lg);
+}
+
+.settings-section-title {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  margin-bottom: var(--space-xs);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.settings-section-title svg {
+  width: 20px;
+  height: 20px;
+  color: var(--spotify-green);
+}
+
+.settings-section-subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.settings-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.settings-row:first-child {
+  padding-top: 0;
+}
+
+.settings-row-info {
+  flex: 1;
+}
+
+.settings-row-title {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.settings-row-description {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+/* ── Theme Selector ── */
+.theme-options {
+  display: flex;
+  gap: var(--space-md);
+}
+
+.theme-option {
+  width: 80px;
+  height: 56px;
+  border-radius: var(--border-radius-md);
+  border: 2px solid var(--border-color);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.theme-option.active {
+  border-color: var(--spotify-green);
+  box-shadow: 0 0 0 2px var(--spotify-green-glow);
+}
+
+.theme-option:hover {
+  border-color: var(--border-color-hover);
+}
+
+.theme-option-dark {
+  background: #0F172A;
+}
+
+.theme-option-dark .theme-bar {
+  background: #181818;
+}
+
+.theme-option-light {
+  background: #f8fafc;
+}
+
+.theme-option-light .theme-bar {
+  background: #ffffff;
+}
+
+.theme-bar {
+  height: 50%;
+  display: flex;
+  align-items: center;
+  padding: 4px 6px;
+  gap: 3px;
+}
+
+.theme-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.theme-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  margin-top: var(--space-xs);
+  text-align: center;
+}
+
+/* ── Danger Zone ── */
+.settings-danger {
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.settings-danger .settings-section-title {
+  color: #ef4444;
+}
+
+.settings-danger .settings-section-title svg {
+  color: #ef4444;
+}
+
+/* ── Password Form ── */
+.settings-password-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  max-width: 400px;
+}
+
+@media (max-width: 768px) {
+  .settings-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
+  }
+
+  .theme-options {
+    flex-wrap: wrap;
+  }
+}
