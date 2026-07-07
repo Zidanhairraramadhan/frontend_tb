@@ -19,10 +19,6 @@ export function renderTopnav(pageTitle = 'Dashboard') {
         </div>
       </div>
       <div class="topnav-right">
-        <button class="topnav-notification" id="notification-btn" title="Notifications">
-          <i data-lucide="bell"></i>
-          <span class="topnav-notification-badge"></span>
-        </button>
         <div class="topnav-avatar" title="${user.name}">
           ${user.avatarInitial}
         </div>

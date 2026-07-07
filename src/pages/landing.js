@@ -15,9 +15,13 @@ export function renderLanding() {
           <span>Music<span class="text-gradient">Link</span></span>
         </a>
         <div class="landing-nav-links">
-          <a href="#features">Features</a>
-          <a href="#/public">Demo</a>
-          <a href="#pricing">Pricing</a>
+          <!-- Smooth scroll ke section #features -->
+          <a href="#features" onclick="event.preventDefault(); document.getElementById('features')?.scrollIntoView({behavior:'smooth'})">Features</a>
+          <!-- Arahkan ke halaman Demo -->
+          <a href="#/demo">Demo</a>
+          <a href="#pricing" onclick="event.preventDefault(); document.getElementById('pricing')?.scrollIntoView({behavior:'smooth'})">Pricing</a>
+          <!-- API Docs dibuka di tab baru -->
+          <a href="http://localhost:5000/docs" target="_blank" rel="noopener noreferrer">API Docs</a>
         </div>
         <div class="landing-nav-actions">
           <a href="#/login" class="btn btn-ghost">Log In</a>
@@ -175,6 +179,57 @@ export function renderLanding() {
         </div>
       </section>
 
+      <!-- Pricing Section -->
+      <section class="pricing-section" id="pricing">
+        <div class="features-header">
+          <h2>Simple, <span class="text-gradient">Transparent</span> Pricing</h2>
+          <p>Mulai gratis, upgrade kapan saja. Tidak ada biaya tersembunyi.</p>
+        </div>
+        <div class="pricing-grid">
+
+          <!-- Free Plan -->
+          <div class="pricing-card">
+            <div class="pricing-badge">Gratis Selamanya</div>
+            <div class="pricing-plan-name">Free</div>
+            <div class="pricing-price">
+              <span class="pricing-currency">Rp</span>
+              <span class="pricing-amount">0</span>
+              <span class="pricing-period">/bulan</span>
+            </div>
+            <ul class="pricing-features-list">
+              <li><i data-lucide="check" style="width:16px;height:16px;color:#1DB954;"></i> 5 Music Links</li>
+              <li><i data-lucide="check" style="width:16px;height:16px;color:#1DB954;"></i> Public Profile Page</li>
+              <li><i data-lucide="check" style="width:16px;height:16px;color:#1DB954;"></i> Basic Analytics</li>
+              <li><i data-lucide="check" style="width:16px;height:16px;color:#1DB954;"></i> QR Code Generator</li>
+              <li><i data-lucide="x" style="width:16px;height:16px;color:var(--text-tertiary);"></i> <span style="color:var(--text-tertiary)">Custom Domain</span></li>
+              <li><i data-lucide="x" style="width:16px;height:16px;color:var(--text-tertiary);"></i> <span style="color:var(--text-tertiary)">Priority Support</span></li>
+            </ul>
+            <button class="btn btn-secondary" style="width:100%;" onclick="alert('Fitur pembayaran menyusul!')">Get Started</button>
+          </div>
+
+          <!-- Pro Plan -->
+          <div class="pricing-card pricing-card-featured">
+            <div class="pricing-badge pricing-badge-pro">Paling Populer ⚡</div>
+            <div class="pricing-plan-name">Pro</div>
+            <div class="pricing-price">
+              <span class="pricing-currency">Rp</span>
+              <span class="pricing-amount">15.000</span>
+              <span class="pricing-period">/bulan</span>
+            </div>
+            <ul class="pricing-features-list">
+              <li><i data-lucide="check" style="width:16px;height:16px;color:#1DB954;"></i> <strong>Unlimited</strong> Music Links</li>
+              <li><i data-lucide="check" style="width:16px;height:16px;color:#1DB954;"></i> Public Profile Page</li>
+              <li><i data-lucide="check" style="width:16px;height:16px;color:#1DB954;"></i> Advanced Analytics</li>
+              <li><i data-lucide="check" style="width:16px;height:16px;color:#1DB954;"></i> QR Code Generator</li>
+              <li><i data-lucide="check" style="width:16px;height:16px;color:#1DB954;"></i> Custom Domain</li>
+              <li><i data-lucide="check" style="width:16px;height:16px;color:#1DB954;"></i> Priority Support</li>
+            </ul>
+            <button class="btn btn-primary" style="width:100%;" onclick="alert('Fitur pembayaran menyusul!')">Beli Sekarang</button>
+          </div>
+
+        </div>
+      </section>
+
       <!-- CTA Section -->
       <section class="cta-section">
         <div class="cta-card">
@@ -191,7 +246,21 @@ export function renderLanding() {
 
       <!-- Footer -->
       <footer class="landing-footer">
-        <p>© 2026 MusicLink. Made with 💚 for musicians everywhere.</p>
+        <div class="footer-links">
+          <a href="https://github.com/Zidanhairraramadhan/frontend_tb" target="_blank" rel="noopener noreferrer">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:6px;"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+            GitHub Frontend
+          </a>
+          <a href="https://github.com/Zidanhairraramadhan/backend_tb" target="_blank" rel="noopener noreferrer">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:6px;"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+            GitHub Backend
+          </a>
+          <a href="#" target="_blank" rel="noopener noreferrer">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            Dokumentasi PDF
+          </a>
+        </div>
+        <p class="footer-copyright">© 2026 MusicLink. Made with 💚 for musicians everywhere.</p>
       </footer>
     </div>
   `;

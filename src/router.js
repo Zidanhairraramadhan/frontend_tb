@@ -11,10 +11,12 @@ import { renderRegister, initRegister } from './pages/register.js';
 import { renderDashboard, initDashboard } from './pages/dashboard.js';
 import { renderProfile, initProfile } from './pages/profile.js';
 import { renderLinks, initLinks } from './pages/links.js';
-import { renderAnalytics, initAnalytics } from './pages/analytics.js';
 import { renderSettings, initSettings } from './pages/settings.js';
 import { renderPublicProfile, initPublicProfile } from './pages/public-profile.js';
 import { renderNotFound, initNotFound } from './pages/not-found.js';
+import { renderDemo, initDemo } from './pages/demo.js';
+import { renderAdminUsers, initAdminUsers } from './pages/admin_users.js';
+import { renderMyProfileView, initMyProfileView } from './pages/my_profile_view.js';
 import { showToast } from './components/toast.js';
 
 const routes = {
@@ -24,9 +26,13 @@ const routes = {
   '/dashboard': { render: renderDashboard, init: initDashboard, auth: true },
   '/profile': { render: renderProfile, init: initProfile, auth: true },
   '/links': { render: renderLinks, init: initLinks, auth: true },
-  '/analytics': { render: renderAnalytics, init: initAnalytics, auth: true },
   '/settings': { render: renderSettings, init: initSettings, auth: true },
   '/public': { render: renderPublicProfile, init: initPublicProfile, auth: false },
+  '/demo': { render: renderDemo, init: initDemo, auth: false },
+  // Route baru: Public Profile Preview (login required)
+  '/my-profile-view': { render: renderMyProfileView, init: initMyProfileView, auth: true },
+  // Route baru: Admin — Manage Users (login required, role check di dalam halaman)
+  '/admin/users': { render: renderAdminUsers, init: initAdminUsers, auth: true },
 };
 
 let currentCleanup = null;

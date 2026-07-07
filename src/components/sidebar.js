@@ -9,12 +9,12 @@ const LOGO_SVG = `<svg viewBox="0 0 64 64" width="28" height="28" style="flex-sh
 
 export function renderSidebar(activePage = 'dashboard') {
   const user = getUser();
+  const isAdmin = user.role === 'admin';
 
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: 'layout-dashboard', href: '#/dashboard' },
     { id: 'profile', label: 'My Profile', icon: 'user-circle', href: '#/profile' },
     { id: 'links', label: 'Music Links', icon: 'link', href: '#/links' },
-    { id: 'analytics', label: 'Analytics', icon: 'bar-chart-3', href: '#/analytics' },
     { id: 'settings', label: 'Settings', icon: 'settings', href: '#/settings' },
   ];
 
@@ -34,10 +34,19 @@ export function renderSidebar(activePage = 'dashboard') {
             <span>${item.label}</span>
           </a>
         `).join('')}
+
+        ${isAdmin ? `
+          <div class="sidebar-section-title" style="margin-top:16px;">Admin</div>
+          <a href="#/admin/users" class="sidebar-link ${activePage === 'admin_users' ? 'active' : ''}" data-page="admin_users">
+            <i data-lucide="users"></i>
+            <span>Manage Users</span>
+            <span class="sidebar-admin-badge">Admin</span>
+          </a>
+        ` : ''}
       </nav>
 
       <div class="sidebar-footer">
-        <a href="#/public" class="sidebar-link" style="margin-bottom: 8px;">
+        <a href="#/my-profile-view" class="sidebar-link" style="margin-bottom: 8px;">
           <i data-lucide="external-link"></i>
           <span>View Public Profile</span>
         </a>
@@ -52,7 +61,7 @@ export function renderSidebar(activePage = 'dashboard') {
           </div>
           <div class="sidebar-user-info">
             <div class="sidebar-user-name">${user.name}</div>
-            <div class="sidebar-user-email">${user.email}</div>
+            <div class="sidebar-user-email">${user.email || user.username}</div>
           </div>
         </div>
       </div>

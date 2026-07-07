@@ -526,3 +526,30 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ── Sidebar Admin Badge ── */
+.sidebar-admin-badge {
+  display: inline-block;
+  margin-left: auto;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #8B5CF6;
+  background: rgba(139, 92, 246, 0.15);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  border-radius: 100px;
+  padding: 2px 7px;
+  flex-shrink: 0;
+}
+
+/* Sidebar active state for admin menu */
+.sidebar-link[data-page="admin_users"].active {
+  background: rgba(139, 92, 246, 0.1);
+  border-color: rgba(139, 92, 246, 0.2);
+  color: #8B5CF6;
+}
+.sidebar-link[data-page="admin_users"].active i {
+  color: #8B5CF6;
+}
+

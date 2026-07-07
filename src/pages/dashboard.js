@@ -5,14 +5,12 @@
 import { renderSidebar, initSidebar } from '../components/sidebar.js';
 import { renderTopnav } from '../components/topnav.js';
 import { renderStatCard } from '../components/stat-card.js';
-import { createLineChart, createDoughnutChart } from '../components/chart.js';
-import { getTotalStats, getAnalytics, getActivities, getLinks } from '../store.js';
+import { getTotalStats, getActivities, getLinks } from '../store.js';
 import { formatNumber, timeAgo } from '../utils/helpers.js';
 import { getPlatform } from '../utils/platforms.js';
 
 export function renderDashboard() {
   const stats = getTotalStats();
-  const analytics = getAnalytics();
   const activities = getActivities();
   const recentLinks = getLinks().slice(0, 5);
 
@@ -62,28 +60,6 @@ export function renderDashboard() {
           })}
         </div>
 
-        <!-- Charts -->
-        <div class="charts-grid">
-          <div class="chart-card">
-            <div class="chart-card-header">
-              <h3 class="chart-card-title">Weekly Click Analytics</h3>
-              <span class="badge badge-green">+23%</span>
-            </div>
-            <div class="chart-container">
-              <canvas id="weekly-chart"></canvas>
-            </div>
-          </div>
-
-          <div class="chart-card">
-            <div class="chart-card-header">
-              <h3 class="chart-card-title">Traffic Sources</h3>
-            </div>
-            <div class="chart-container">
-              <canvas id="traffic-chart"></canvas>
-            </div>
-          </div>
-        </div>
-
         <!-- Bottom Grid -->
         <div class="bottom-grid">
           <!-- Recent Activities -->
@@ -123,10 +99,6 @@ export function renderDashboard() {
                 <i data-lucide="user-circle"></i>
                 Edit Profile
               </a>
-              <a href="#/analytics" class="quick-action-btn">
-                <i data-lucide="bar-chart-3"></i>
-                View Analytics
-              </a>
               <a href="#/public" class="quick-action-btn">
                 <i data-lucide="external-link"></i>
                 Public Profile
@@ -163,28 +135,5 @@ export function initDashboard() {
   initSidebar();
 
   // Load database state asynchronously
-  syncData().then(() => {
-    // Re-render sections that rely on dynamic store data
-    const stats = getTotalStats();
-    const analytics = getAnalytics();
-    
-    // Check if element is still in DOM (user might have navigated away)
-    const weeklyChartEl = document.getElementById('weekly-chart');
-    if (weeklyChartEl) {
-      createLineChart('weekly-chart', analytics.weeklyLabels, analytics.weeklyClicks, 'Clicks');
-      createDoughnutChart(
-        'traffic-chart',
-        analytics.trafficSources.map(s => s.source),
-        analytics.trafficSources.map(s => s.percentage)
-      );
-    }
-  });
-
-  const analytics = getAnalytics();
-  createLineChart('weekly-chart', analytics.weeklyLabels, analytics.weeklyClicks, 'Clicks');
-  createDoughnutChart(
-    'traffic-chart',
-    analytics.trafficSources.map(s => s.source),
-    analytics.trafficSources.map(s => s.percentage)
-  );
+  syncData();
 }

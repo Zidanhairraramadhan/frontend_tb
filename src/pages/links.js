@@ -121,7 +121,11 @@ export function renderLinks() {
 
         <!-- Links Grid -->
         <div id="links-container">
-          ${renderLinkCards()}
+          <div style="text-align: center; padding: 60px 20px; color: var(--text-tertiary);">
+            <div class="skeleton" style="height: 24px; width: 200px; margin: 0 auto 12px; border-radius: 12px;"></div>
+            <div class="skeleton" style="height: 16px; width: 140px; margin: 0 auto; border-radius: 8px;"></div>
+            <p style="margin-top: 16px;">Loading links data...</p>
+          </div>
         </div>
 
         <!-- FAB for mobile -->
@@ -137,7 +141,7 @@ export function initLinks() {
   initSidebar();
 
   // Sync links from remote GORM database upon entering
-  syncLinks().then(refreshLinks);
+  syncLinks().then(refreshLinks).catch(refreshLinks);
 
   // Add link button
   const addBtn = document.getElementById('add-link-btn');

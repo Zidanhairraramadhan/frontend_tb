@@ -11,7 +11,6 @@ import './styles/auth.css';
 import './styles/dashboard.css';
 import './styles/profile.css';
 import './styles/links.css';
-import './styles/analytics.css';
 import './styles/settings.css';
 import './styles/public-profile.css';
 
