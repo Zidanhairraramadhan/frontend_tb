@@ -1,13 +1,45 @@
 // =============================================
-// State Management & Real Go API Service
+// State Management & Reactive Store
+// Tanggung jawab: Global state & business logic
+// Komunikasi API didelegasikan ke services/api.js
 // =============================================
 
-const API_BASE = 'http://localhost:5000';
+import { apiFetch, loginRequest, registerRequest, reset401Flag } from './services/api.js';
+
+// ── Safe Storage Helpers ──
+// Mencegah crash jika localStorage berisi nilai 'undefined' atau string tidak valid
+
+/**
+ * Membaca token dari localStorage dengan aman.
+ * Mengembalikan string kosong jika token tidak ada atau bernilai 'undefined'.
+ */
+function getSafeToken() {
+  const raw = localStorage.getItem('token');
+  // Cegah false-positive: string 'undefined' atau 'null' BUKAN token yang valid
+  if (!raw || raw === 'undefined' || raw === 'null') return '';
+  return raw;
+}
+
+/**
+ * Mem-parse JSON dari localStorage dengan aman.
+ * Mengembalikan null jika nilai tidak ada, tidak valid, atau bukan JSON.
+ */
+function getSafeUser() {
+  const raw = localStorage.getItem('user');
+  if (!raw || raw === 'undefined' || raw === 'null') return null;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    // Jika JSON.parse gagal (data korup), bersihkan dan kembalikan null
+    localStorage.removeItem('user');
+    return null;
+  }
+}
 
 // Global reactive store state (mirrors database)
 const state = {
-  token: localStorage.getItem('token') || '',
-  user: JSON.parse(localStorage.getItem('user')) || null,
+  token: getSafeToken(),
+  user: getSafeUser(),
   links: [],
   activities: [
     { id: 'act_001', type: 'click', message: 'Someone clicked your Spotify link', time: new Date().toISOString() },
@@ -20,35 +52,15 @@ const state = {
   }
 };
 
-// Helper for authenticated requests
-async function apiFetch(endpoint, options = {}) {
-  const headers = {
-    'Content-Type': 'application/json',
-    ...options.headers,
-  };
-
-  if (state.token) {
-    headers['Authorization'] = `Bearer ${state.token}`;
-  }
-
-  const res = await fetch(`${API_BASE}${endpoint}`, {
-    ...options,
-    headers,
-  });
-
-  if (res.status === 401 || res.status === 403) {
-    // Session expired or unauthorized
+// Helper untuk request terautentikasi.
+// Mendelegasikan ke apiFetch dari services/api.js,
+// menyuntikkan token dari state dan callback untuk penanganan 401.
+function authFetch(endpoint, options = {}) {
+  return apiFetch(endpoint, options, state.token, () => {
+    // Callback ini hanya dipanggil SEKALI oleh api.js meski ada race condition
     logout();
     window.location.hash = '#/login';
-    throw new Error('Session expired. Please log in again.');
-  }
-
-  if (!res.ok) {
-    const errorData = await res.json().catch(() => ({}));
-    throw new Error(errorData.message || 'API Request failed');
-  }
-
-  return res.json();
+  });
 }
 
 // ── Authentication ──
@@ -58,42 +70,32 @@ export function isAuthenticated() {
 }
 
 export async function login(username, password) {
-  const res = await fetch(`${API_BASE}/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, password })
-  });
+  // Delegasikan HTTP request ke services/api.js
+  const data = await loginRequest(username, password);
 
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.message || 'Invalid username or password');
+  // Simpan token & user ke state. Pastikan data valid sebelum disimpan.
+  state.token = data.token || '';
+  state.user = data.user || null;
+
+  // Hanya simpan jika nilainya valid (bukan undefined)
+  if (state.token) {
+    localStorage.setItem('token', state.token);
+  }
+  if (state.user) {
+    localStorage.setItem('user', JSON.stringify(state.user));
   }
 
-  const data = await res.json();
-  state.token = data.token;
-  state.user = data.user;
-  
-  localStorage.setItem('token', data.token);
-  localStorage.setItem('user', JSON.stringify(data.user));
-  
-  // Sync state
+  // Reset flag 401 agar session baru berjalan normal
+  reset401Flag();
+
+  // Sync state dari database
   await syncData();
   return data;
 }
 
 export async function register(username, password, name) {
-  const res = await fetch(`${API_BASE}/register`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, password, name })
-  });
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.message || 'Registration failed');
-  }
-
-  return res.json();
+  // Delegasikan HTTP request ke services/api.js
+  return registerRequest(username, password, name);
 }
 
 export function logout() {
@@ -105,7 +107,7 @@ export function logout() {
 }
 
 export async function changePassword(currentPassword, newPassword) {
-  return apiFetch('/api/change-password', {
+  return authFetch('/api/change-password', {
     method: 'PUT',
     body: JSON.stringify({ current_password: currentPassword, new_password: newPassword })
   });
@@ -120,13 +122,13 @@ export function getUser() {
 
 export async function syncProfile() {
   if (!isAuthenticated()) return;
-  const user = await apiFetch('/api/profile');
+  const user = await authFetch('/api/profile');
   state.user = user;
   localStorage.setItem('user', JSON.stringify(user));
 }
 
 export async function updateUser(updates) {
-  const res = await apiFetch('/api/profile', {
+  const res = await authFetch('/api/profile', {
     method: 'PUT',
     body: JSON.stringify(updates)
   });
@@ -147,12 +149,12 @@ export function getActiveLinks() {
 
 export async function syncLinks() {
   if (!isAuthenticated()) return;
-  const links = await apiFetch('/api/links');
+  const links = await authFetch('/api/links');
   state.links = links;
 }
 
 export async function addLink(link) {
-  const newLink = await apiFetch('/api/links', {
+  const newLink = await authFetch('/api/links', {
     method: 'POST',
     body: JSON.stringify(link)
   });
@@ -161,7 +163,7 @@ export async function addLink(link) {
 }
 
 export async function updateLink(id, updates) {
-  const res = await apiFetch(`/api/links/${id}`, {
+  const res = await authFetch(`/api/links/${id}`, {
     method: 'PUT',
     body: JSON.stringify(updates)
   });
@@ -173,7 +175,7 @@ export async function updateLink(id, updates) {
 }
 
 export async function deleteLink(id) {
-  await apiFetch(`/api/links/${id}`, {
+  await authFetch(`/api/links/${id}`, {
     method: 'DELETE'
   });
   state.links = state.links.filter(l => l.id !== id);

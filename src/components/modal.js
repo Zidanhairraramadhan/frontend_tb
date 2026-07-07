@@ -46,7 +46,8 @@ export function openModal(editData = null) {
           <div class="input-group">
             <label for="link-url">URL</label>
             <input type="url" class="input" id="link-url" name="url"
-              placeholder="https://..." value="${editData?.url || ''}" required />
+              placeholder="https://..." value="${editData?.url || ''}"
+              required pattern="https?://.+" title="URL harus diawali dengan http:// atau https://" />
           </div>
 
           <div class="modal-footer">

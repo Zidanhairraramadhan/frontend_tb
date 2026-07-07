@@ -35,14 +35,14 @@ export function renderRegister() {
           <div class="input-group">
             <div style="position:relative;">
               <i data-lucide="user-check" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--text-tertiary);pointer-events:none;"></i>
-              <input type="text" class="input" style="padding-left:44px;" id="register-username" placeholder="Username (min 4 chars)" required />
+              <input type="text" class="input" style="padding-left:44px;" id="register-username" placeholder="Username (min 4 chars)" required minlength="4" />
             </div>
           </div>
 
           <div class="input-group">
             <div style="position:relative;">
               <i data-lucide="lock" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--text-tertiary);pointer-events:none;"></i>
-              <input type="password" class="input" style="padding-left:44px;" id="register-password" placeholder="Password (min 6 chars)" required />
+              <input type="password" class="input" style="padding-left:44px;" id="register-password" placeholder="Password (min 6 chars)" required minlength="6" />
             </div>
           </div>
 
