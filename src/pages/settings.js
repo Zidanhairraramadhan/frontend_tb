@@ -186,8 +186,148 @@ export function renderSettings() {
   `;
 }
 
+// ── i18n dictionary (minimal) ──
+export const I18N = {
+  en: {
+    dashboard: 'Dashboard',
+    profile:   'My Profile',
+    links:     'Music Links',
+    settings:  'Settings',
+    pageTitle: 'Settings',
+    pageSub:   'Customize your MusicLink experience.',
+    appearance:'Appearance',
+    theme:     'Theme',
+    language:  'Language',
+    notifications: 'Notifications',
+    notifDesc1: 'Manage your notification preferences.',
+    notifLabel1: 'Email Updates',
+    notifSub1: 'Receive updates via email',
+    notifLabel2: 'Push Notifications',
+    notifSub2: 'Get push notifications',
+    notifLabel3: 'Weekly Report',
+    notifSub3: 'Receive weekly analytics report',
+    notifLabel4: 'Milestones',
+    notifSub4: 'Get notified when you reach a milestone',
+    security:  'Security',
+    secDesc:   'Manage your account security.',
+    dangerZone:'Danger Zone',
+    dangerDesc:'Irreversible and destructive actions.',
+    delTitle:  'Delete Account',
+    delDesc:   'Permanently delete your account and all data',
+  },
+  id: {
+    dashboard: 'Dasbor',
+    profile:   'Profil Saya',
+    links:     'Tautan Musik',
+    settings:  'Pengaturan',
+    pageTitle: 'Pengaturan',
+    pageSub:   'Sesuaikan pengalaman MusicLink Anda.',
+    appearance:'Tampilan',
+    theme:     'Tema',
+    language:  'Bahasa',
+    notifications: 'Notifikasi',
+    notifDesc1: 'Kelola preferensi notifikasi Anda.',
+    notifLabel1: 'Pembaruan Email',
+    notifSub1: 'Terima pembaruan via email',
+    notifLabel2: 'Notifikasi Push',
+    notifSub2: 'Dapatkan notifikasi push',
+    notifLabel3: 'Laporan Mingguan',
+    notifSub3: 'Terima laporan analitik mingguan',
+    notifLabel4: 'Pencapaian',
+    notifSub4: 'Dapatkan notifikasi saat mencapai target',
+    security:  'Keamanan',
+    secDesc:   'Kelola keamanan akun Anda.',
+    dangerZone:'Zona Berbahaya',
+    dangerDesc:'Tindakan yang tidak dapat dibatalkan.',
+    delTitle:  'Hapus Akun',
+    delDesc:   'Hapus akun Anda beserta datanya secara permanen',
+  },
+};
+
+export function applyLanguage(lang) {
+  const t = I18N[lang] || I18N.en;
+  localStorage.setItem('lang', lang);
+
+  // Update page title + subtitle
+  const pageTitle = document.querySelector('.settings-page .page-title');
+  const pageSub   = document.querySelector('.settings-page .page-subtitle');
+  if (pageTitle) pageTitle.textContent = t.pageTitle;
+  if (pageSub)   pageSub.textContent   = t.pageSub;
+
+  // Update section titles and subtitles
+  const sections = document.querySelectorAll('.settings-section-title');
+  sections.forEach(el => {
+    const icon = el.querySelector('i');
+    const iconHtml = icon ? icon.outerHTML : '';
+    const txt = el.textContent.trim().toLowerCase();
+    const parent = el.closest('.settings-section');
+    const subtitle = parent ? parent.querySelector('.settings-section-subtitle') : null;
+
+    if (txt.includes('appear') || txt.includes('tampil')) {
+      el.innerHTML = iconHtml + ' ' + t.appearance;
+    } else if (txt.includes('notif')) {
+      el.innerHTML = iconHtml + ' ' + t.notifications;
+      if (subtitle) subtitle.textContent = t.notifDesc1;
+      if (parent) {
+         const titles = parent.querySelectorAll('.settings-row-title');
+         const desc = parent.querySelectorAll('.settings-row-description');
+         if(titles[0]) titles[0].textContent = t.notifLabel1;
+         if(desc[0]) desc[0].textContent = t.notifSub1;
+         if(titles[1]) titles[1].textContent = t.notifLabel2;
+         if(desc[1]) desc[1].textContent = t.notifSub2;
+         if(titles[2]) titles[2].textContent = t.notifLabel3;
+         if(desc[2]) desc[2].textContent = t.notifSub3;
+         if(titles[3]) titles[3].textContent = t.notifLabel4;
+         if(desc[3]) desc[3].textContent = t.notifSub4;
+      }
+    } else if (txt.includes('secur') || txt.includes('keaman')) {
+      el.innerHTML = iconHtml + ' ' + t.security;
+      if (subtitle) subtitle.textContent = t.secDesc;
+    } else if (txt.includes('danger') || txt.includes('berba')) {
+      el.innerHTML = iconHtml + ' ' + t.dangerZone;
+      if (subtitle) subtitle.textContent = t.dangerDesc;
+      if (parent) {
+         const dTitle = parent.querySelector('.settings-row-title');
+         const dDesc = parent.querySelector('.settings-row-description');
+         if(dTitle) dTitle.textContent = t.delTitle;
+         if(dDesc) dDesc.textContent = t.delDesc;
+      }
+    }
+  });
+
+  // Update sidebar nav labels (if sidebar is in DOM)
+  const navMap = {
+    'dashboard':  t.dashboard,
+    'profile':    t.profile,
+    'links':      t.links,
+    'settings':   t.settings,
+  };
+  document.querySelectorAll('.sidebar-link[data-page]').forEach(link => {
+    const page = link.dataset.page;
+    if (navMap[page]) {
+      const span = link.querySelector('span:not(.sidebar-admin-badge)');
+      if (span) span.textContent = navMap[page];
+    }
+  });
+}
+
 export function initSettings() {
   initSidebar();
+
+  // Apply saved language on load
+  const savedLang = localStorage.getItem('lang') || 'en';
+  const langSelect = document.getElementById('settings-language');
+  if (langSelect) langSelect.value = savedLang;
+  applyLanguage(savedLang);
+
+  // Language change
+  langSelect?.addEventListener('change', (e) => {
+    applyLanguage(e.target.value);
+    showToast(
+      e.target.value === 'id' ? 'Bahasa diubah ke Bahasa Indonesia 🇮🇩' : 'Language changed to English 🇬🇧',
+      'success'
+    );
+  });
 
   // Theme toggle
   document.querySelectorAll('.theme-option').forEach(option => {

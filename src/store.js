@@ -4,7 +4,7 @@
 // Komunikasi API didelegasikan ke services/api.js
 // =============================================
 
-import { apiFetch, loginRequest, registerRequest, reset401Flag } from './services/api.js';
+import { API_BASE, apiFetch, loginRequest, registerRequest, reset401Flag } from './services/api.js';
 
 // ── Safe Storage Helpers ──
 // Mencegah crash jika localStorage berisi nilai 'undefined' atau string tidak valid
@@ -192,7 +192,7 @@ export async function toggleLinkStatus(id) {
 // ── Public Profile (No Auth Required) ──
 
 export async function fetchPublicProfile(username) {
-  const res = await fetch(`${API_BASE}/public/${username}`);
+  const res = await fetch(`${API_BASE}/api/public/users/${username}`);
   if (!res.ok) {
     throw new Error('Public artist profile not found');
   }

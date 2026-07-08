@@ -4,8 +4,48 @@
 
 const LOGO_SVG = `<svg viewBox="0 0 64 64" width="32" height="32" style="flex-shrink:0;"><defs><linearGradient id="noteGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#1DB954"/><stop offset="100%" style="stop-color:#14b8a6"/></linearGradient><linearGradient id="linkGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#8B5CF6"/><stop offset="100%" style="stop-color:#6366F1"/></linearGradient></defs><rect x="2" y="2" width="60" height="60" rx="16" fill="#121212" stroke="rgba(255,255,255,0.08)" stroke-width="1.5"/><rect x="18" y="34" width="12" height="18" rx="6" fill="none" stroke="url(#noteGrad)" stroke-width="4.5" transform="rotate(-15 24 43)"/><rect x="34" y="30" width="12" height="18" rx="6" fill="none" stroke="url(#linkGrad)" stroke-width="4.5" transform="rotate(-15 40 39)"/><path d="M28 36V17" stroke="url(#noteGrad)" stroke-width="4" stroke-linecap="round"/><path d="M44 32V13" stroke="url(#linkGrad)" stroke-width="4" stroke-linecap="round"/><path d="M28 17C34 15 38 15 44 13" stroke="url(#linkGrad)" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M28 23C34 21 38 21 44 19" stroke="url(#noteGrad)" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`;
 
+// ── Rotating song playlists for hero card ──
+const HERO_SONG_SETS = [
+  // West Coast legends
+  [
+    { label: 'Kendrick Lamar', dot: '#1DB954', sub: 'HUMBLE.' },
+    { label: 'Dr. Dre',        dot: '#8B5CF6', sub: 'Still D.R.E.' },
+    { label: 'Snoop Dogg',     dot: '#FF5500', sub: 'Drop It Like It\'s Hot' },
+    { label: '2Pac',           dot: '#FC3C44', sub: 'All Eyez On Me' },
+  ],
+  // Viral TikTok hits
+  [
+    { label: 'Sabrina Carpenter', dot: '#1DB954', sub: 'Espresso' },
+    { label: 'Billie Eilish',     dot: '#00f2ea', sub: 'BIRDS OF A FEATHER' },
+    { label: 'Charli XCX',        dot: '#FF0000', sub: 'brat' },
+    { label: 'Gracie Abrams',     dot: '#8B5CF6', sub: 'That\'s So True' },
+  ],
+];
 
 export function renderLanding() {
+  // Check auth state from localStorage
+  const token = localStorage.getItem('token');
+  let isLoggedIn = false;
+  try { isLoggedIn = !!token && token !== 'undefined' && token !== 'null'; } catch {}
+
+  const navActions = isLoggedIn
+    ? `<a href="#/dashboard" class="btn btn-primary" id="landing-dashboard-btn">
+         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+         Go to Dashboard
+       </a>`
+    : `<a href="#/login" class="btn btn-ghost">Log In</a>
+       <a href="#/register" class="btn btn-primary">Sign Up Free</a>`;
+
+  // First song set rendered initially
+  const firstSet = HERO_SONG_SETS[0];
+  const songItemsHtml = firstSet.map(s => `
+    <div class="card-link-item">
+      <span class="link-dot" style="background:${s.dot};"></span>
+      <span class="card-link-song" style="font-size:12px;font-weight:600;flex:1;color:var(--text-primary);">${s.label}</span>
+      <span class="card-link-sub" style="font-size:10px;color:var(--text-tertiary);margin-left:auto;">${s.sub}</span>
+    </div>
+  `).join('');
+
   return `
     <div class="landing">
       <!-- Navigation -->
@@ -23,9 +63,8 @@ export function renderLanding() {
           <!-- API Docs dibuka di tab baru -->
           <a href="http://localhost:5000/docs" target="_blank" rel="noopener noreferrer">API Docs</a>
         </div>
-        <div class="landing-nav-actions">
-          <a href="#/login" class="btn btn-ghost">Log In</a>
-          <a href="#/register" class="btn btn-primary">Sign Up Free</a>
+        <div class="landing-nav-actions" id="landing-nav-actions">
+          ${navActions}
         </div>
       </nav>
 
@@ -45,9 +84,9 @@ export function renderLanding() {
               Create one beautiful page to share your Spotify, Apple Music, YouTube, TikTok, Instagram, SoundCloud and more. Designed for musicians who want to stand out.
             </p>
             <div class="hero-actions">
-              <a href="#/register" class="btn btn-primary btn-lg">
+              <a href="${isLoggedIn ? '#/dashboard' : '#/register'}" class="btn btn-primary btn-lg">
                 <i data-lucide="zap" style="width:18px;height:18px;"></i>
-                Get Started Free
+                ${isLoggedIn ? 'Go to Dashboard' : 'Get Started Free'}
               </a>
               <a href="#/public" class="btn btn-secondary btn-lg">
                 <i data-lucide="play" style="width:18px;height:18px;"></i>
@@ -76,39 +115,8 @@ export function renderLanding() {
               <div class="card-avatar">🎵</div>
               <div class="card-name">Alex Rivera</div>
               <div class="card-handle">@alexrivera</div>
-              <div class="card-links">
-                <div class="card-link-item">
-                  <span class="link-dot" style="background:#1DB954;"></span>
-                  Spotify
-                </div>
-                <div class="card-link-item">
-                  <span class="link-dot" style="background:#FF0000;"></span>
-                  YouTube
-                </div>
-                <div class="card-link-item">
-                  <span class="link-dot" style="background:#FC3C44;"></span>
-                  Apple Music
-                </div>
-                <div class="card-link-item">
-                  <span class="link-dot" style="background:#FF5500;"></span>
-                  SoundCloud
-                </div>
-              </div>
-            </div>
-
-            <!-- Floating Analytics Card -->
-            <div class="hero-card hero-card-floating-1">
-              <div class="mini-chart">
-                <div class="mini-chart-bar" style="height:12px;"></div>
-                <div class="mini-chart-bar" style="height:20px;"></div>
-                <div class="mini-chart-bar" style="height:16px;"></div>
-                <div class="mini-chart-bar" style="height:28px;"></div>
-                <div class="mini-chart-bar" style="height:22px;"></div>
-                <div class="mini-chart-bar" style="height:30px;"></div>
-              </div>
-              <div>
-                <div style="font-size:12px;font-weight:700;">+23%</div>
-                <div style="font-size:10px;color:var(--text-tertiary);">This week</div>
+              <div class="card-links" id="hero-card-links" style="transition: opacity 0.4s ease;">
+                ${songItemsHtml}
               </div>
             </div>
 
@@ -236,9 +244,9 @@ export function renderLanding() {
           <h2>Ready to share your music<br>with the <span class="text-gradient">world</span>?</h2>
           <p>Join thousands of artists already using MusicLink. It's free to get started.</p>
           <div class="cta-actions">
-            <a href="#/register" class="btn btn-primary btn-lg">
+            <a href="${isLoggedIn ? '#/dashboard' : '#/register'}" class="btn btn-primary btn-lg">
               <i data-lucide="rocket" style="width:18px;height:18px;"></i>
-              Create Your MusicLink
+              ${isLoggedIn ? 'Open Dashboard' : 'Create Your MusicLink'}
             </a>
           </div>
         </div>
@@ -267,5 +275,30 @@ export function renderLanding() {
 }
 
 export function initLanding() {
-  // No special JS needed for landing
+  if (window.lucide) lucide.createIcons();
+
+  // ── Rotating hero card songs ──
+  let currentSet = 0;
+  const cardLinks = document.getElementById('hero-card-links');
+
+  if (cardLinks) {
+    setInterval(() => {
+      // Fade out
+      cardLinks.style.opacity = '0';
+
+      setTimeout(() => {
+        currentSet = (currentSet + 1) % HERO_SONG_SETS.length;
+        const set = HERO_SONG_SETS[currentSet];
+        cardLinks.innerHTML = set.map(s => `
+          <div class="card-link-item">
+            <span class="link-dot" style="background:${s.dot};"></span>
+            <span class="card-link-song" style="font-size:12px;font-weight:600;flex:1;color:var(--text-primary);">${s.label}</span>
+            <span class="card-link-sub" style="font-size:10px;color:var(--text-tertiary);margin-left:auto;">${s.sub}</span>
+          </div>
+        `).join('');
+        // Fade back in
+        cardLinks.style.opacity = '1';
+      }, 400); // Wait for transition
+    }, 3000); // Rotate every 3s
+  }
 }

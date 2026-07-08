@@ -46,7 +46,7 @@ export function renderSidebar(activePage = 'dashboard') {
       </nav>
 
       <div class="sidebar-footer">
-        <a href="#/my-profile-view" class="sidebar-link" style="margin-bottom: 8px;">
+        <a href="#/public/${user?.username || 'me'}" class="sidebar-link" style="margin-bottom: 8px;">
           <i data-lucide="external-link"></i>
           <span>View Public Profile</span>
         </a>

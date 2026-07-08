@@ -11,7 +11,7 @@ import { renderRegister, initRegister } from './pages/register.js';
 import { renderDashboard, initDashboard } from './pages/dashboard.js';
 import { renderProfile, initProfile } from './pages/profile.js';
 import { renderLinks, initLinks } from './pages/links.js';
-import { renderSettings, initSettings } from './pages/settings.js';
+import { renderSettings, initSettings, applyLanguage } from './pages/settings.js';
 import { renderPublicProfile, initPublicProfile } from './pages/public-profile.js';
 import { renderNotFound, initNotFound } from './pages/not-found.js';
 import { renderDemo, initDemo } from './pages/demo.js';
@@ -101,6 +101,10 @@ function renderPage(renderFn, initFn) {
 
   // Setup logout handler
   setupLogout();
+
+  // Apply persistent language to the newly rendered page elements
+  const savedLang = localStorage.getItem('lang') || 'en';
+  applyLanguage(savedLang);
 
   // Scroll to top
   window.scrollTo(0, 0);

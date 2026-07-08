@@ -397,3 +397,30 @@
   width: 16px;
   height: 16px;
 }
+
+/* ── Spotify Embed Widget ── */
+.public-spotify-embed {
+  width: 100%;
+  background: linear-gradient(135deg, rgba(29, 185, 84, 0.06) 0%, rgba(29, 185, 84, 0.02) 100%);
+  border: 1px solid rgba(29, 185, 84, 0.2);
+  border-radius: var(--border-radius-xl);
+  padding: 12px 14px;
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+.public-spotify-embed-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1DB954;
+  margin-bottom: 10px;
+  letter-spacing: 0.01em;
+}
+
+.public-spotify-embed iframe {
+  border-radius: 10px;
+  display: block;
+  width: 100%;
+}

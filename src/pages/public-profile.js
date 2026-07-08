@@ -59,7 +59,7 @@ export function initPublicProfile() {
   let username = 'alex'; // Default fallback demo
   
   if (hash.startsWith('#/public/')) {
-    username = hash.replace('#/public/', '');
+    username = hash.replace('#/public/', '').split('?')[0];
   }
 
   // Fetch from Golang backend API
@@ -80,6 +80,56 @@ export function initPublicProfile() {
         `;
       }
     });
+}
+
+// ── Helper: render satu link item (iframe untuk Spotify track, button untuk lainnya) ──
+function renderLinkItem(link, p) {
+  const isSpotifyTrack = link.url && link.url.includes('open.spotify.com/track/');
+
+  if (isSpotifyTrack) {
+    // Ubah URL track → embed URL resmi Spotify
+    const embedUrl = link.url
+      .replace('open.spotify.com/track/', 'open.spotify.com/embed/track/')
+      .split('?')[0]; // hapus query params agar embed bersih
+
+    return `
+      <div class="public-spotify-embed" data-link-id="${link.id}">
+        <div class="public-spotify-embed-label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#1DB954">
+            <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+          </svg>
+          ${link.title}
+        </div>
+        <iframe
+          src="${embedUrl}"
+          width="100%"
+          height="80"
+          frameborder="0"
+          allowtransparency="true"
+          allow="encrypted-media"
+          loading="lazy"
+          style="border-radius:10px;display:block;">
+        </iframe>
+      </div>
+    `;
+  }
+
+  // Link biasa → tombol navigasi
+  return `
+    <a href="${link.url}" target="_blank" rel="noopener" class="public-link-btn"
+      data-link-id="${link.id}"
+      style="--btn-color:${p.color};"
+      onmouseenter="this.style.borderColor='${p.color}';this.querySelector('.public-link-icon').style.background='${p.bgColor}'"
+      onmouseleave="this.style.borderColor='';this.querySelector('.public-link-icon').style.background='${p.bgColor}'">
+      <span class="public-link-icon" style="background:${p.bgColor};color:${p.color};">
+        ${p.icon}
+      </span>
+      <span class="public-link-text">${link.title}</span>
+      <span class="public-link-arrow">
+        <i data-lucide="chevron-right" style="width:18px;height:18px;"></i>
+      </span>
+    </a>
+  `;
 }
 
 function renderActiveProfile(data) {
@@ -121,25 +171,11 @@ function renderActiveProfile(data) {
       </div>
     </div>
 
-    <!-- Music Link Buttons -->
+    <!-- Music Links (button atau Spotify iframe) -->
     <div class="public-links stagger-children">
       ${links.map(link => {
         const p = getPlatform(link.platform);
-        return `
-          <a href="${link.url}" target="_blank" rel="noopener" class="public-link-btn"
-            data-link-id="${link.id}"
-            style="--btn-color:${p.color};"
-            onmouseenter="this.style.borderColor='${p.color}';this.querySelector('.public-link-icon').style.background='${p.bgColor}'"
-            onmouseleave="this.style.borderColor='';this.querySelector('.public-link-icon').style.background='${p.bgColor}'">
-            <span class="public-link-icon" style="background:${p.bgColor};color:${p.color};">
-              ${p.icon}
-            </span>
-            <span class="public-link-text">${link.title}</span>
-            <span class="public-link-arrow">
-              <i data-lucide="chevron-right" style="width:18px;height:18px;"></i>
-            </span>
-          </a>
-        `;
+        return renderLinkItem(link, p);
       }).join('')}
       ${links.length === 0 ? `
         <div style="text-align:center;padding:24px;color:var(--text-tertiary);">
