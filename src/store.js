@@ -117,7 +117,8 @@ export async function changePassword(currentPassword, newPassword) {
 
 export function getUser() {
   // Try to load cached user if async fetch hasn't completed
-  return state.user || { name: 'Loading...', username: '...', avatarInitial: '..' };
+  // Data Contract: { id, username, role, links: [...] }
+  return state.user || { username: 'Loading...', role: 'user', links: [] };
 }
 
 export async function syncProfile() {
@@ -149,8 +150,9 @@ export function getActiveLinks() {
 
 export async function syncLinks() {
   if (!isAuthenticated()) return;
-  const links = await authFetch('/api/links');
-  state.links = links;
+  const data = await authFetch('/api/links');
+  // Guard: backend mungkin mengembalikan array langsung atau { links: [...] }
+  state.links = Array.isArray(data) ? data : (Array.isArray(data?.links) ? data.links : []);
 }
 
 export async function addLink(link) {
@@ -219,17 +221,18 @@ export async function syncData() {
 
 export function getTotalStats() {
   const totalLinks = state.links.length;
-  const totalPlatforms = new Set(state.links.map(l => l.platform)).size;
-  const totalClicks = state.links.reduce((sum, l) => sum + l.clicks, 0);
+  const totalPlatforms = new Set(state.links.map(l => l?.platform).filter(Boolean)).size;
+  const totalClicks = state.links.reduce((sum, l) => sum + (l?.clicks || 0), 0);
   const totalViews = totalClicks + 1500; // Simulated views
   return { totalLinks, totalPlatforms, totalClicks, totalViews };
 }
 
 export function getAnalytics() {
-  const totalClicks = state.links.reduce((sum, l) => sum + l.clicks, 0);
+  const totalClicks = state.links.reduce((sum, l) => sum + (l?.clicks || 0), 0);
   const topPlatforms = Object.entries(
     state.links.reduce((acc, l) => {
-      acc[l.platform] = (acc[l.platform] || 0) + l.clicks;
+      const key = l?.platform || 'unknown';
+      acc[key] = (acc[key] || 0) + (l?.clicks || 0);
       return acc;
     }, {})
   ).map(([platform, clicks]) => ({ platform, clicks }))

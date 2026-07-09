@@ -17,9 +17,11 @@ import './styles/public-profile.css';
 // ── Import Router ──
 import { initRouter } from './router.js';
 import { syncData } from './store.js';
+import { playSplashScreen } from './components/splash.js';
 
 // ── Boot Application ──
 document.addEventListener('DOMContentLoaded', async () => {
+  await playSplashScreen(); // Tahan splash screen jika belum pernah
   await syncData();
   initRouter();
 });

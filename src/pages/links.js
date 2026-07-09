@@ -32,20 +32,27 @@ function renderLinkCards() {
   return `
     <div class="links-grid stagger-children">
       ${links.map(link => {
-        const p = getPlatform(link.platform);
+        const p = getPlatform(link?.platform || '');
         return `
-          <div class="link-card" data-link-id="${link.id}">
+          <div class="link-card" data-link-id="${link?.id || ''}">
             <div class="link-card-header">
-              <div class="link-card-icon" style="background:${p.bgColor};color:${p.color};">
-                <span>${p.icon}</span>
+              <!-- Fix #3: Tampilkan cover album jika ada, fallback ke ikon platform -->
+              <div class="link-card-icon" style="background:${p.bgColor};color:${p.color};overflow:hidden;padding:0;">
+                ${link?.image_url
+                  ? `<img src="${link.image_url}" alt="cover"
+                        style="width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block;"
+                        onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+                     <span style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:18px;">${p.icon}</span>`
+                  : `<span style="font-size:18px;">${p.icon}</span>`
+                }
               </div>
               <div class="link-card-info">
-                <div class="link-card-title">${link.title}</div>
+                <div class="link-card-title">${link?.title || 'Untitled'}</div>
                 <div class="link-card-platform">${p.name}</div>
               </div>
               <div class="link-status">
                 <label class="toggle">
-                  <input type="checkbox" ${link.active ? 'checked' : ''} data-toggle-id="${link.id}" />
+                  <input type="checkbox" ${link?.active ? 'checked' : ''} data-toggle-id="${link?.id || ''}" />
                   <span class="toggle-slider"></span>
                 </label>
               </div>
@@ -53,25 +60,25 @@ function renderLinkCards() {
 
             <div class="link-card-url">
               <i data-lucide="external-link"></i>
-              <span class="truncate">${link.url}</span>
+              <span class="truncate">${link?.url || '#'}</span>
             </div>
 
             <div class="link-card-footer">
               <div class="link-card-stats">
                 <div class="link-card-stat">
                   <i data-lucide="mouse-pointer-click"></i>
-                  ${formatNumber(link.clicks)} clicks
+                  ${formatNumber(link?.clicks || 0)} clicks
                 </div>
                 <div class="link-card-stat">
-                  <span class="status-dot ${link.active ? 'status-dot-active' : 'status-dot-inactive'}"></span>
-                  ${link.active ? 'Active' : 'Inactive'}
+                  <span class="status-dot ${link?.active ? 'status-dot-active' : 'status-dot-inactive'}"></span>
+                  ${link?.active ? 'Active' : 'Inactive'}
                 </div>
               </div>
               <div class="link-card-actions">
-                <button title="Edit" data-edit-id="${link.id}">
+                <button title="Edit" data-edit-id="${link?.id || ''}">
                   <i data-lucide="pencil" style="width:16px;height:16px;"></i>
                 </button>
-                <button title="Delete" class="delete" data-delete-id="${link.id}">
+                <button title="Delete" class="delete" data-delete-id="${link?.id || ''}">
                   <i data-lucide="trash-2" style="width:16px;height:16px;"></i>
                 </button>
               </div>
@@ -103,13 +110,10 @@ export function renderLinks() {
             <div class="links-filter">
               <select class="select" id="links-filter">
                 <option value="all">All Platforms</option>
-                <option value="spotify">Spotify</option>
-                <option value="youtube">YouTube</option>
-                <option value="applemusic">Apple Music</option>
-                <option value="tiktok">TikTok</option>
-                <option value="instagram">Instagram</option>
-                <option value="soundcloud">SoundCloud</option>
-                <option value="website">Website</option>
+                <option value="spotify">🎵 Spotify</option>
+                <option value="applemusic">🍎 Apple Music</option>
+                <option value="youtube">▶️ YouTube</option>
+                <option value="soundcloud">☁️ SoundCloud</option>
               </select>
             </div>
           </div>
@@ -219,8 +223,16 @@ export function initLinks() {
 
 function refreshLinks() {
   const container = document.getElementById('links-container');
-  if (container) {
-    container.innerHTML = renderLinkCards();
-    if (window.lucide) lucide.createIcons();
-  }
+  if (!container) return;
+
+  // Fix #2: Sinkronkan dari backend terlebih dahulu, lalu render ulang
+  syncLinks()
+    .catch(() => {}) // silent fail — tetap render dari state lokal
+    .finally(() => {
+      container.innerHTML = renderLinkCards();
+      if (window.lucide) lucide.createIcons();
+
+      // Re-attach empty state button (muncul setelah render ulang)
+      document.getElementById('empty-add-btn')?.addEventListener('click', () => openModal());
+    });
 }

@@ -372,3 +372,83 @@
     --angle: 360deg;
   }
 }
+
+/* ── Splash Screen (Intro) ── */
+#splash-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #0F172A; /* Gelap / Navy */
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+}
+
+.splash-fade-out {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.splash-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  animation: scaleIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.splash-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.splash-icon {
+  width: 64px;
+  height: 64px;
+  color: var(--primary);
+  animation: pulse 2s infinite ease-in-out;
+  filter: drop-shadow(0 0 16px rgba(29, 185, 84, 0.4));
+}
+
+.splash-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  background: linear-gradient(135deg, #fff 0%, #a1a1aa 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: 0.2s;
+  opacity: 0;
+}
+
+/* Equalizer Animasi */
+.splash-equalizer {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 24px;
+  opacity: 0;
+  animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: 0.4s;
+}
+
+.splash-equalizer .bar {
+  width: 6px;
+  background-color: var(--primary);
+  border-radius: 4px;
+  height: 8px;
+}
+
+.splash-equalizer .bar:nth-child(1) { animation: musicWave 1.2s infinite ease-in-out; }
+.splash-equalizer .bar:nth-child(2) { animation: musicWave2 1.4s infinite ease-in-out; }
+.splash-equalizer .bar:nth-child(3) { animation: musicWave3 1.1s infinite ease-in-out; }
+.splash-equalizer .bar:nth-child(4) { animation: musicWave 1.3s infinite ease-in-out; }
+.splash-equalizer .bar:nth-child(5) { animation: musicWave2 1.5s infinite ease-in-out; }

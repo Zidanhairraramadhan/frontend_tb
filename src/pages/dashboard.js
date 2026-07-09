@@ -108,17 +108,17 @@ export function renderDashboard() {
             <div class="divider"></div>
             <h3 class="recent-card-title">Recent Links</h3>
             ${recentLinks.map(link => {
-              const p = getPlatform(link.platform);
+              const p = getPlatform(link?.platform || '');
               return `
                 <div class="recent-item">
                   <div class="recent-item-icon" style="background:${p.bgColor};color:${p.color};">
                     <span style="font-size:16px;">${p.icon}</span>
                   </div>
                   <div class="recent-item-content">
-                    <div class="recent-item-title">${link.title}</div>
+                    <div class="recent-item-title">${link?.title || 'Untitled'}</div>
                     <div class="recent-item-subtitle">${p.name}</div>
                   </div>
-                  <div class="recent-item-meta">${formatNumber(link.clicks)} clicks</div>
+                  <div class="recent-item-meta">${formatNumber(link?.clicks || 0)} clicks</div>
                 </div>
               `;
             }).join('')}

@@ -56,12 +56,13 @@ export function renderSidebar(activePage = 'dashboard') {
         </a>
         <div class="divider" style="margin: 12px 0;"></div>
         <div class="sidebar-user">
-          <div class="topnav-avatar" style="width:36px;height:36px;font-size:13px;">
-            ${user.avatarInitial}
-          </div>
+          ${user?.avatar_url 
+            ? '<img src="' + user.avatar_url + '" alt="Avatar" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.1);" />'
+            : '<div class="topnav-avatar" style="width:36px;height:36px;font-size:13px;">' + (user?.username || '?')[0].toUpperCase() + '</div>'
+          }
           <div class="sidebar-user-info">
-            <div class="sidebar-user-name">${user.name}</div>
-            <div class="sidebar-user-email">${user.email || user.username}</div>
+            <div class="sidebar-user-name">${user?.username || 'Unknown'}</div>
+            <div class="sidebar-user-email">${user?.role || 'user'}</div>
           </div>
         </div>
       </div>

@@ -82,49 +82,139 @@ export function initPublicProfile() {
     });
 }
 
-// ── Helper: render satu link item (iframe untuk Spotify track, button untuk lainnya) ──
+// ══════════════════════════════════════════════════════
+// ── Helper: Embed Player — Spotify · YouTube · Fallback
+// ══════════════════════════════════════════════════════
+
+/**
+ * Mengkonversi URL YouTube (watch / share / shorts) → embed URL
+ * Mengembalikan null jika bukan URL YouTube yang valid.
+ */
+function getYouTubeEmbedUrl(url) {
+  if (!url) return null;
+  try {
+    const u = new URL(url);
+    // youtu.be/VIDEO_ID
+    if (u.hostname === 'youtu.be') {
+      const id = u.pathname.slice(1).split('/')[0];
+      return id ? `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1` : null;
+    }
+    // youtube.com/watch?v=VIDEO_ID  or  /shorts/VIDEO_ID  or  /embed/VIDEO_ID
+    if (u.hostname.includes('youtube.com')) {
+      if (u.pathname.startsWith('/embed/')) return url; // already embed
+      if (u.pathname.startsWith('/shorts/')) {
+        const id = u.pathname.split('/shorts/')[1]?.split('?')[0];
+        return id ? `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1` : null;
+      }
+      const id = u.searchParams.get('v');
+      return id ? `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1` : null;
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+/**
+ * Mengkonversi URL Spotify → embed URL.
+ * Mendukung track, album, playlist, episode, artist.
+ */
+function getSpotifyEmbedUrl(url) {
+  if (!url) return null;
+  try {
+    const u = new URL(url);
+    if (!u.hostname.includes('spotify.com')) return null;
+    // open.spotify.com/track/xxx → open.spotify.com/embed/track/xxx
+    const embedPath = u.pathname.replace(/^\/(intl-[a-z]+\/)?/, '/');
+    return `https://open.spotify.com/embed${embedPath}?utm_source=generator&theme=0`;
+  } catch {
+    return null;
+  }
+}
+
+// ── renderLinkItem: titik masuk utama ──
 function renderLinkItem(link, p) {
-  const isSpotifyTrack = link.url && link.url.includes('open.spotify.com/track/');
+  const platform = link?.platform?.toLowerCase() || '';
+  const url      = link?.url || '';
 
-  if (isSpotifyTrack) {
-    // Ubah URL track → embed URL resmi Spotify
-    const embedUrl = link.url
-      .replace('open.spotify.com/track/', 'open.spotify.com/embed/track/')
-      .split('?')[0]; // hapus query params agar embed bersih
-
-    return `
-      <div class="public-spotify-embed" data-link-id="${link.id}">
-        <div class="public-spotify-embed-label">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="#1DB954">
-            <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
-          </svg>
-          ${link.title}
+  // ── 1. SPOTIFY EMBED ──────────────────────────────────
+  if (platform === 'spotify' || url.includes('spotify.com')) {
+    const embedUrl = getSpotifyEmbedUrl(url);
+    if (embedUrl) {
+      return `
+        <div class="embed-player embed-player--spotify" data-link-id="${link?.id || ''}">
+          <div class="embed-player__header">
+            <div class="embed-player__badge embed-player__badge--spotify">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="#1DB954">
+                <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+              </svg>
+              Spotify
+            </div>
+            <div class="embed-player__title">${link?.title || 'Untitled'}</div>
+            <a href="${url}" target="_blank" rel="noopener" class="embed-player__open" title="Open in Spotify">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </a>
+          </div>
+          <iframe
+            src="${embedUrl}"
+            width="100%"
+            height="152"
+            frameborder="0"
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            loading="lazy"
+            style="border-radius:12px;display:block;margin-top:10px;">
+          </iframe>
         </div>
-        <iframe
-          src="${embedUrl}"
-          width="100%"
-          height="80"
-          frameborder="0"
-          allowtransparency="true"
-          allow="encrypted-media"
-          loading="lazy"
-          style="border-radius:10px;display:block;">
-        </iframe>
-      </div>
-    `;
+      `;
+    }
   }
 
-  // Link biasa → tombol navigasi
+  // ── 2. YOUTUBE EMBED ──────────────────────────────────
+  if (platform === 'youtube' || url.includes('youtube.com') || url.includes('youtu.be')) {
+    const embedUrl = getYouTubeEmbedUrl(url);
+    if (embedUrl) {
+      return `
+        <div class="embed-player embed-player--youtube" data-link-id="${link?.id || ''}">
+          <div class="embed-player__header">
+            <div class="embed-player__badge embed-player__badge--youtube">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="#FF0000">
+                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+              </svg>
+              YouTube
+            </div>
+            <div class="embed-player__title">${link?.title || 'Untitled'}</div>
+            <a href="${url}" target="_blank" rel="noopener" class="embed-player__open" title="Open in YouTube">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </a>
+          </div>
+          <div class="embed-player__yt-wrap">
+            <iframe
+              src="${embedUrl}"
+              width="100%"
+              height="100%"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+              loading="lazy"
+              style="border-radius:12px;display:block;position:absolute;inset:0;">
+            </iframe>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  // ── 3. FALLBACK: Link Card (Apple Music, SoundCloud, Instagram, Website, dll) ──
   return `
-    <a href="${link.url}" target="_blank" rel="noopener" class="public-link-btn"
-      data-link-id="${link.id}"
+    <a href="${url || '#'}" target="_blank" rel="noopener" class="public-link-btn"
+      data-link-id="${link?.id || ''}"
       style="--btn-color:${p.color};"
       onmouseenter="this.style.borderColor='${p.color}';this.querySelector('.public-link-icon').style.background='${p.bgColor}'"
       onmouseleave="this.style.borderColor='';this.querySelector('.public-link-icon').style.background='${p.bgColor}'">
       <span class="public-link-icon" style="background:${p.bgColor};color:${p.color};">
         ${p.icon}
       </span>
-      <span class="public-link-text">${link.title}</span>
+      <span class="public-link-text">${link?.title || 'Untitled'}</span>
       <span class="public-link-arrow">
         <i data-lucide="chevron-right" style="width:18px;height:18px;"></i>
       </span>
@@ -132,41 +222,63 @@ function renderLinkItem(link, p) {
   `;
 }
 
+
+
+
+// ── Helper: Canvas Average Color ──
+function getAverageColor(imgElement) {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = imgElement.naturalWidth || imgElement.width || 100;
+  canvas.height = imgElement.naturalHeight || imgElement.height || 100;
+  ctx.drawImage(imgElement, 0, 0, canvas.width, canvas.height);
+  
+  try {
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+    let r = 0, g = 0, b = 0, count = 0;
+    for (let i = 0; i < data.length; i += 40) {
+      if (data[i+3] > 0) {
+        r += data[i]; g += data[i+1]; b += data[i+2]; count++;
+      }
+    }
+    if (count === 0) return '#1DB954';
+    return `rgb(${Math.floor(r/count)}, ${Math.floor(g/count)}, ${Math.floor(b/count)})`;
+  } catch {
+    return '#1DB954';
+  }
+}
+
 function renderActiveProfile(data) {
-  const { user, links } = data;
+  // Data Contract: { user: { id, username, role, links }, links: [...] }
+  const user  = data?.user  || {};
+  const links = data?.links || [];
   const container = document.getElementById('public-profile-container');
   if (!container) return;
 
-  const profileUrl = `${window.location.origin}/#/public/${user.username}`;
+  const displayName  = user?.username || 'Unknown Artist';
+  const profileUrl   = `${window.location.origin}/#/public/${user?.username || ''}`;
+  const avatarLetter = (user?.username || '?')[0].toUpperCase();
 
   container.innerHTML = `
     <!-- Cover -->
-    <div class="public-cover">
+    <div class="public-cover" id="public-cover" style="${user?.cover_url ? 'background-image: url(' + user.cover_url + '); background-size: cover; background-position: center;' : 'background: linear-gradient(135deg, #1DB954 0%, #191414 40%, #8B5CF6 100%);'}">
       <div class="public-cover-gradient"></div>
     </div>
 
     <!-- Profile Header -->
     <div class="public-header">
-      <div class="public-avatar">${user.avatar_initial}</div>
-      <h1 class="public-name">
-        ${user.name}
-        ${user.verified ? `
-          <span class="verified-badge" title="Verified Artist">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="20 6 9 17 4 12"></polyline>
-            </svg>
-          </span>
-        ` : ''}
-      </h1>
-      <p class="public-bio">${user.bio || ''}</p>
+      <div class="public-avatar" style="${user?.avatar_url ? 'background-image: url(' + user.avatar_url + '); background-size: cover; background-position: center;' : ''}">${user?.avatar_url ? '' : avatarLetter}</div>
+      <h1 class="public-name">${displayName}</h1>
+      <p class="public-bio">${user?.bio || ''}</p>
       <div class="public-meta">
         <span class="public-meta-item">
           <i data-lucide="map-pin" style="width:14px;height:14px;"></i>
-          ${user.country || 'Worldwide'}
+          ${user?.country || 'Worldwide'}
         </span>
         <span class="public-meta-item">
           <i data-lucide="music" style="width:14px;height:14px;"></i>
-          ${user.genre || 'Musician'}
+          ${user?.genre || 'Musician'}
         </span>
       </div>
     </div>
@@ -174,7 +286,7 @@ function renderActiveProfile(data) {
     <!-- Music Links (button atau Spotify iframe) -->
     <div class="public-links stagger-children">
       ${links.map(link => {
-        const p = getPlatform(link.platform);
+        const p = getPlatform(link?.platform || '');
         return renderLinkItem(link, p);
       }).join('')}
       ${links.length === 0 ? `
@@ -189,7 +301,7 @@ function renderActiveProfile(data) {
       <div class="public-qr-title">Scan to visit profile</div>
       <div class="public-qr-code" id="public-qr-container"></div>
       <div style="font-size:var(--font-size-xs);color:var(--text-tertiary);margin-top:8px;">
-        musiclink.io/${user.username}
+        musiclink.io/${user?.username || ''}
       </div>
     </div>
 
@@ -222,21 +334,34 @@ function renderActiveProfile(data) {
 
   // Link click counter tracking registration
   container.querySelectorAll('.public-link-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
+    btn.addEventListener('click', () => {
       const linkId = btn.dataset.linkId;
-      if (linkId) {
-        incrementClick(linkId);
-      }
+      if (linkId) incrementClick(linkId);
     });
   });
 
-  // Share button
-  document.getElementById('share-btn')?.addEventListener('click', async () => {
+  // Apply dynamic color from avatar if cover is not custom
+  if (user?.avatar_url && !user?.cover_url) {
+    const img = new Image();
+    img.crossOrigin = 'Anonymous';
+    img.onload = () => {
+      const color = getAverageColor(img);
+      const coverEl = document.getElementById('public-cover');
+      if (coverEl) {
+        coverEl.style.backgroundImage = 'none';
+        coverEl.style.background = 'linear-gradient(135deg, ' + color + ' 0%, #111827 100%)';
+      }
+    };
+    img.src = user.avatar_url;
+  }
+
+  // Bind Share Buttons
+  document.getElementById('btn-share-profile')?.addEventListener('click', async () => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `${user.name} — MusicLink`,
-          text: `Check out ${user.name}'s music on MusicLink!`,
+          title: `${displayName} — MusicLink`,
+          text: `Check out ${displayName}'s music on MusicLink!`,
           url: profileUrl,
         });
       } catch {}

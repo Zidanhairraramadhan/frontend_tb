@@ -13,15 +13,9 @@ export function renderTopnav(pageTitle = 'Dashboard') {
         <button class="mobile-menu-btn" id="mobile-menu-btn">
           <i data-lucide="menu"></i>
         </button>
-        <div class="topnav-search">
-          <i data-lucide="search"></i>
-          <input type="text" class="input" placeholder="Search anything..." />
-        </div>
+        <h2 class="topnav-title" style="margin: 0; font-size: 1.25rem; font-weight: 600; color: var(--text-primary); letter-spacing: -0.02em;">${pageTitle}</h2>
       </div>
       <div class="topnav-right">
-        <div class="topnav-avatar" title="${user.name}">
-          ${user.avatarInitial}
-        </div>
       </div>
     </header>
   `;

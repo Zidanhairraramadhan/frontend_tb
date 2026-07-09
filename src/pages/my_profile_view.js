@@ -32,16 +32,16 @@ export function renderMyProfileView() {
          Belum ada link aktif. <a href="#/links" style="color:#1DB954;">Tambahkan sekarang →</a>
        </div>`
     : links.map(link => {
-        const p = getPlatform(link.platform);
-        const icon = getLinkIcon(link.platform);
+        const p = getPlatform(link?.platform || '');
+        const icon = getLinkIcon(link?.platform || '');
         return `
-          <a class="myprofile-link-btn" href="${link.url}" target="_blank" rel="noopener noreferrer"
-             data-link-id="${link.id}" onclick="window._trackClick && window._trackClick(${link.id})">
+          <a class="myprofile-link-btn" href="${link?.url || '#'}" target="_blank" rel="noopener noreferrer"
+             data-link-id="${link?.id || ''}" onclick="window._trackClick && window._trackClick(${link?.id || 0})">
             <div class="myprofile-link-icon" style="background:${icon.bg};">
               ${icon.svg}
             </div>
             <div class="myprofile-link-text">
-              <div class="myprofile-link-title">${link.title}</div>
+              <div class="myprofile-link-title">${link?.title || 'Untitled'}</div>
               <div class="myprofile-link-sub">${p.name}</div>
             </div>
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="margin-left:auto;opacity:0.4;flex-shrink:0;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
@@ -49,7 +49,7 @@ export function renderMyProfileView() {
         `;
       }).join('');
 
-  const initial = (user.name || user.username || '?')[0].toUpperCase();
+  const initial = (user?.username || '?')[0].toUpperCase();
 
   return `
     <div class="myprofile-page">
@@ -82,15 +82,15 @@ export function renderMyProfileView() {
         </div>
 
         <!-- Identity -->
-        <h1 class="myprofile-name">${user.name || user.username || 'Musisi'}</h1>
-        <p class="myprofile-handle">@${user.username || ''}</p>
+        <h1 class="myprofile-name">${user?.username || 'Musisi'}</h1>
+        <p class="myprofile-handle">@${user?.username || ''}</p>
 
-        ${user.bio ? `<p class="myprofile-bio">${user.bio}</p>` : ''}
+        ${user?.bio ? `<p class="myprofile-bio">${user.bio}</p>` : ''}
 
         <!-- Public URL hint -->
         <div class="myprofile-url-chip">
           <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-          musiclink.app/${user.username || ''}
+          musiclink.app/${user?.username || ''}
         </div>
 
         <!-- Divider -->

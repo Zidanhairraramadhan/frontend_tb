@@ -7,6 +7,34 @@ import { renderTopnav } from '../components/topnav.js';
 import { getUser, updateUser } from '../store.js';
 import { showToast } from '../components/toast.js';
 
+function getAverageColor(imgElement) {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = imgElement.naturalWidth || imgElement.width || 100;
+  canvas.height = imgElement.naturalHeight || imgElement.height || 100;
+  ctx.drawImage(imgElement, 0, 0, canvas.width, canvas.height);
+  
+  try {
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+    let r = 0, g = 0, b = 0, count = 0;
+    
+    // Sample every 10th pixel for performance
+    for (let i = 0; i < data.length; i += 40) {
+      if (data[i+3] > 0) { // If pixel is not fully transparent
+        r += data[i];
+        g += data[i+1];
+        b += data[i+2];
+        count++;
+      }
+    }
+    if (count === 0) return '#1DB954';
+    return `rgb(${Math.floor(r/count)}, ${Math.floor(g/count)}, ${Math.floor(b/count)})`;
+  } catch (e) {
+    return '#1DB954';
+  }
+}
+
 export function renderProfile() {
   const user = getUser();
 
@@ -19,11 +47,15 @@ export function renderProfile() {
         <h1 class="page-title">My Profile</h1>
         <p class="page-subtitle">Manage your artist profile and appearance.</p>
 
+        <!-- Hidden File Inputs -->
+        <input type="file" id="cover-input" accept="image/*" hidden />
+        <input type="file" id="avatar-input" accept="image/*" hidden />
+
         <!-- Cover Image -->
         <div class="profile-cover-section">
-          <div class="profile-cover" style="background: linear-gradient(135deg, #1DB954 0%, #191414 40%, #8B5CF6 100%);"></div>
+          <div class="profile-cover" id="profile-cover-preview" style="${user?.cover_url ? 'background-image: url(' + user.cover_url + ');' : 'background: linear-gradient(135deg, #1DB954 0%, #191414 40%, #8B5CF6 100%);'} background-size: cover; background-position: center;"></div>
           <div class="profile-cover-overlay">
-            <button class="btn btn-secondary btn-sm">
+            <button class="btn btn-secondary btn-sm" id="btn-change-cover">
               <i data-lucide="camera" style="width:14px;height:14px;"></i>
               Change Cover
             </button>
@@ -33,14 +65,14 @@ export function renderProfile() {
         <!-- Avatar Section -->
         <div class="profile-avatar-section">
           <div class="profile-avatar-wrapper">
-            <div class="profile-avatar">${user.avatarInitial}</div>
-            <button class="profile-avatar-edit" title="Change photo">
+            <div class="profile-avatar" id="profile-avatar-preview" style="background-size: cover; background-position: center; ${user?.avatar_url ? 'background-image: url(' + user.avatar_url + ');' : ''}">${user?.avatar_url ? '' : (user?.username || '?')[0].toUpperCase()}</div>
+            <button class="profile-avatar-edit" id="btn-change-avatar" title="Change photo">
               <i data-lucide="camera"></i>
             </button>
           </div>
           <div class="profile-info">
-            <h2>${user.name}</h2>
-            <p>@${user.username} · ${user.genre}</p>
+            <h2>${user?.username || 'Unknown'}</h2>
+            <p>@${user?.username || ''} · ${user?.genre || 'Musician'}</p>
           </div>
         </div>
 
@@ -57,15 +89,15 @@ export function renderProfile() {
                 <div class="profile-form-grid">
                   <div class="input-group">
                     <label>Artist Name</label>
-                    <input type="text" class="input" id="profile-name" value="${user.name}" />
+                    <input type="text" class="input" id="profile-name" value="${user?.username || ''}" />
                   </div>
                   <div class="input-group">
                     <label>Username</label>
-                    <input type="text" class="input" id="profile-username" value="${user.username}" />
+                    <input type="text" class="input" id="profile-username" value="${user?.username || ''}" />
                   </div>
                   <div class="input-group profile-form-full">
                     <label>Bio</label>
-                    <textarea class="input" id="profile-bio" rows="3">${user.bio}</textarea>
+                    <textarea class="input" id="profile-bio" rows="3">${user?.bio || ''}</textarea>
                   </div>
                   <div class="input-group">
                     <label>Genre</label>
@@ -135,12 +167,12 @@ export function renderProfile() {
             <div class="profile-preview">
               <div class="profile-preview-title">Social Preview</div>
               <div class="profile-preview-card">
-                <div class="profile-preview-avatar" id="preview-avatar">${user.avatarInitial}</div>
-                <div class="profile-preview-name" id="preview-name">${user.name}</div>
-                <div class="profile-preview-bio" id="preview-bio">${user.bio}</div>
+                <div class="profile-preview-avatar" id="preview-avatar" style="${user?.avatar_url ? 'background-image: url(' + user.avatar_url + '); background-size: cover; background-position: center;' : ''}">${user?.avatar_url ? '' : (user?.username || '?')[0].toUpperCase()}</div>
+                <div class="profile-preview-name" id="preview-name">${user?.username || 'Unknown'}</div>
+                <div class="profile-preview-bio" id="preview-bio">${user?.bio || ''}</div>
                 <div class="profile-preview-meta">
-                  <span><i data-lucide="map-pin" style="width:12px;height:12px;"></i> ${user.country}</span>
-                  <span><i data-lucide="music" style="width:12px;height:12px;"></i> ${user.genre}</span>
+                  <span><i data-lucide="map-pin" style="width:12px;height:12px;"></i> ${user?.country || 'Worldwide'}</span>
+                  <span><i data-lucide="music" style="width:12px;height:12px;"></i> ${user?.genre || 'Musician'}</span>
                 </div>
               </div>
             </div>
@@ -175,6 +207,87 @@ export function initProfile() {
       if (el) el.textContent = e.target.value;
     });
 
+    // ── Image Upload Handling (Base64) ──
+    const avatarInput = document.getElementById('avatar-input');
+    const coverInput = document.getElementById('cover-input');
+    const btnAvatar = document.getElementById('btn-change-avatar');
+    const btnCover = document.getElementById('btn-change-cover');
+    const avatarPreview = document.getElementById('profile-avatar-preview');
+    const topnavAvatar = document.querySelector('.topnav-avatar');
+    const cardAvatar = document.getElementById('preview-avatar');
+    const coverPreview = document.getElementById('profile-cover-preview');
+
+    let currentAvatarUrl = getUser()?.avatar_url || '';
+    let currentCoverUrl = getUser()?.cover_url || '';
+
+    // If there is an initial avatar_url but no cover_url, try to extract its color
+    if (currentAvatarUrl && !currentCoverUrl && coverPreview) {
+      const img = new Image();
+      img.crossOrigin = 'Anonymous';
+      img.onload = () => {
+        const color = getAverageColor(img);
+        coverPreview.style.backgroundImage = 'none';
+        coverPreview.style.background = 'linear-gradient(135deg, ' + color + ' 0%, #111827 100%)';
+      };
+      img.src = currentAvatarUrl;
+    }
+
+    btnAvatar?.addEventListener('click', () => avatarInput.click());
+    btnCover?.addEventListener('click', () => coverInput.click());
+
+    avatarInput?.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files[0]) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const base64 = e.target.result;
+          currentAvatarUrl = base64;
+          // Hilangkan inisial teks dan set background image
+          if (avatarPreview) {
+            avatarPreview.textContent = '';
+            avatarPreview.style.backgroundImage = 'url(' + base64 + ')';
+          }
+          if (topnavAvatar) {
+            topnavAvatar.textContent = '';
+            topnavAvatar.style.backgroundImage = 'url(' + base64 + ')';
+            topnavAvatar.style.backgroundSize = 'cover';
+          }
+          if (cardAvatar) {
+            cardAvatar.textContent = '';
+            cardAvatar.style.backgroundImage = 'url(' + base64 + ')';
+            cardAvatar.style.backgroundSize = 'cover';
+          }
+          // Dynamic Cover Color Extraction
+          if (!currentCoverUrl && coverPreview) {
+            const img = new Image();
+            img.onload = () => {
+              const color = getAverageColor(img);
+              coverPreview.style.backgroundImage = 'none';
+              coverPreview.style.background = 'linear-gradient(135deg, ' + color + ' 0%, #111827 100%)';
+            };
+            img.src = base64;
+          }
+        };
+        reader.readAsDataURL(e.target.files[0]);
+      }
+    });
+
+    coverInput?.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files[0]) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const base64 = e.target.result;
+          currentCoverUrl = base64;
+          if (coverPreview) {
+            coverPreview.style.background = 'none'; // reset gradient
+            coverPreview.style.backgroundImage = 'url(' + base64 + ')';
+            coverPreview.style.backgroundSize = 'cover';
+            coverPreview.style.backgroundPosition = 'center';
+          }
+        };
+        reader.readAsDataURL(e.target.files[0]);
+      }
+    });
+
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       updateUser({
@@ -183,6 +296,8 @@ export function initProfile() {
         bio: bioInput?.value,
         genre: document.getElementById('profile-genre')?.value,
         country: document.getElementById('profile-country')?.value,
+        avatar_url: currentAvatarUrl,
+        cover_url: currentCoverUrl,
         avatarInitial: nameInput?.value.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2),
       });
       showToast('Profile saved successfully!', 'success');

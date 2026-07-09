@@ -29,7 +29,7 @@ function renderUserMusicList(links = []) {
   }
 
   return links.map(link => {
-    const isSpotify = link.url && link.url.includes('open.spotify.com');
+    const isSpotify = link?.url && link.url.includes('open.spotify.com');
     return `
       <div class="admin-music-item">
         ${isSpotify ? `
@@ -38,9 +38,9 @@ function renderUserMusicList(links = []) {
             Spotify
           </span>
         ` : `<span class="admin-music-badge">Link</span>`}
-        <div class="admin-music-title">${link.title || 'Tanpa Judul'}</div>
-        <a href="${link.url}" target="_blank" rel="noopener" class="admin-music-url" title="${link.url}">
-          ${link.url}
+        <div class="admin-music-title">${link?.title || 'Tanpa Judul'}</div>
+        <a href="${link?.url || '#'}" target="_blank" rel="noopener" class="admin-music-url" title="${link?.url || ''}">
+          ${link?.url || '-'}
         </a>
       </div>
     `;
@@ -60,29 +60,29 @@ function renderUserTable(users = []) {
   }
 
   return users.map((u, i) => {
-    const links = u.links || [];
-    const uid = `music-accordion-${u.id || i}`;
+    const links = u?.links || [];
+    const uid = `music-accordion-${u?.id || i}`;
     const linkCount = links.length;
     return `
       <tr class="admin-table-row">
         <td class="admin-table-cell">${i + 1}</td>
         <td class="admin-table-cell">
           <div style="display:flex;align-items:center;gap:10px;">
-            <div class="admin-avatar">${(u.name || u.username || '?')[0].toUpperCase()}</div>
+            <div class="admin-avatar">${(u?.username || '?')[0].toUpperCase()}</div>
             <div>
-              <div style="font-weight:600;color:var(--text-primary);">${u.name || '-'}</div>
-              <div style="font-size:12px;color:var(--text-tertiary);">@${u.username || '-'}</div>
+              <div style="font-weight:600;color:var(--text-primary);">@${u?.username || '-'}</div>
+              <div style="font-size:12px;color:var(--text-tertiary);">${u?.role || 'user'}</div>
             </div>
           </div>
         </td>
-        <td class="admin-table-cell" style="color:var(--text-secondary);">${u.email || '-'}</td>
+        <td class="admin-table-cell" style="color:var(--text-secondary);">${u?.id || '-'}</td>
         <td class="admin-table-cell">
-          <span class="admin-role-badge ${u.role === 'admin' ? 'admin-role-admin' : 'admin-role-user'}">
-            ${u.role || 'user'}
+          <span class="admin-role-badge ${u?.role === 'admin' ? 'admin-role-admin' : 'admin-role-user'}">
+            ${u?.role || 'user'}
           </span>
         </td>
         <td class="admin-table-cell" style="color:var(--text-secondary);">
-          ${u.created_at ? new Date(u.created_at).toLocaleDateString('id-ID') : '-'}
+          ${u?.created_at ? new Date(u.created_at).toLocaleDateString('id-ID') : '-'}
         </td>
 
         <!-- ── Kolom Musik ── -->
@@ -373,14 +373,13 @@ export function initAdminUsers() {
 
     let result = allUsers
       .filter(u =>
-        (u.name || '').toLowerCase().includes(q) ||
-        (u.username || '').toLowerCase().includes(q) ||
-        (u.email || '').toLowerCase().includes(q)
+        (u?.username || '').toLowerCase().includes(q) ||
+        (u?.role || '').toLowerCase().includes(q)
       )
-      .filter(u => role === 'all' || (u.role || 'user') === role)
+      .filter(u => role === 'all' || (u?.role || 'user') === role)
       .sort((a, b) => {
-        const na = (a.name || a.username || '').toLowerCase();
-        const nb = (b.name || b.username || '').toLowerCase();
+        const na = (a?.username || '').toLowerCase();
+        const nb = (b?.username || '').toLowerCase();
         return sort === 'asc' ? na.localeCompare(nb) : nb.localeCompare(na);
       });
 

@@ -424,3 +424,131 @@
   display: block;
   width: 100%;
 }
+
+/* ══════════════════════════════════════════════
+   Embed Player — Spotify · YouTube · Universal
+   ══════════════════════════════════════════════ */
+
+.embed-player {
+  width: 100%;
+  border-radius: 16px;
+  padding: 14px 16px;
+  animation: fadeInUp 0.45s ease forwards;
+  transition: box-shadow 0.25s ease;
+}
+
+.embed-player:hover {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+}
+
+/* ── Spotify variant ── */
+.embed-player--spotify {
+  background: linear-gradient(135deg, rgba(29, 185, 84, 0.08) 0%, rgba(29, 185, 84, 0.03) 100%);
+  border: 1px solid rgba(29, 185, 84, 0.22);
+}
+
+.embed-player--spotify:hover {
+  border-color: rgba(29, 185, 84, 0.38);
+}
+
+/* ── YouTube variant ── */
+.embed-player--youtube {
+  background: linear-gradient(135deg, rgba(255, 0, 0, 0.07) 0%, rgba(255, 0, 0, 0.02) 100%);
+  border: 1px solid rgba(255, 0, 0, 0.18);
+}
+
+.embed-player--youtube:hover {
+  border-color: rgba(255, 0, 0, 0.32);
+}
+
+/* ── Header row ── */
+.embed-player__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
+/* ── Platform badge (icon + label) ── */
+.embed-player__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.embed-player__badge--spotify {
+  background: rgba(29, 185, 84, 0.14);
+  color: #1DB954;
+}
+
+.embed-player__badge--youtube {
+  background: rgba(255, 0, 0, 0.12);
+  color: #FF0000;
+}
+
+/* ── Track / video title ── */
+.embed-player__title {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary, #fff);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── External-open button ── */
+.embed-player__open {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--text-tertiary, #666);
+  text-decoration: none;
+  transition: background 0.18s, color 0.18s;
+}
+
+.embed-player__open:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: var(--text-primary, #fff);
+}
+
+/* ── Spotify iframe wrapper ── */
+.embed-player--spotify iframe {
+  border-radius: 12px;
+  display: block;
+  width: 100%;
+}
+
+/* ── YouTube 16:9 responsive wrapper ── */
+.embed-player__yt-wrap {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%; /* 16:9 */
+  margin-top: 12px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+}
+
+.embed-player__yt-wrap iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  display: block;
+}
+
