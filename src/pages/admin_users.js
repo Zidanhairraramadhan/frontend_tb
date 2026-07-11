@@ -68,7 +68,10 @@ function renderUserTable(users = []) {
         <td class="admin-table-cell">${i + 1}</td>
         <td class="admin-table-cell">
           <div style="display:flex;align-items:center;gap:10px;">
-            <div class="admin-avatar">${(u?.username || '?')[0].toUpperCase()}</div>
+            ${u?.avatar_url && u.avatar_url.trim() !== ''
+              ? `<img src="${u.avatar_url}" alt="${u.username || 'user'}" class="admin-avatar-img" />`
+              : `<div class="admin-avatar">${(u?.username || '?')[0].toUpperCase()}</div>`
+            }
             <div>
               <div style="font-weight:600;color:var(--text-primary);">@${u?.username || '-'}</div>
               <div style="font-size:12px;color:var(--text-tertiary);">${u?.role || 'user'}</div>
@@ -257,6 +260,10 @@ export function renderAdminUsers() {
         background: linear-gradient(135deg, #1DB954, #8B5CF6);
         display: flex; align-items: center; justify-content: center;
         font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0;
+      }
+      .admin-avatar-img {
+        width: 36px; height: 36px; border-radius: 50%;
+        object-fit: cover; flex-shrink: 0;
       }
       .admin-role-badge {
         display: inline-flex; align-items: center; gap: 4px;

@@ -28,14 +28,14 @@ export function renderLogin() {
           <div class="input-group">
             <div style="position:relative;">
               <i data-lucide="user" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--text-tertiary);pointer-events:none;"></i>
-              <input type="text" class="input" style="padding-left:44px;" id="login-username" placeholder="Username" value="alex" required />
+              <input type="text" class="input" style="padding-left:44px;" id="login-username" placeholder="Username" required />
             </div>
           </div>
 
           <div class="input-group">
             <div style="position:relative;">
               <i data-lucide="lock" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--text-tertiary);pointer-events:none;"></i>
-              <input type="password" class="input" style="padding-left:44px;" id="login-password" placeholder="Password" value="password123" required />
+              <input type="password" class="input" style="padding-left:44px;" id="login-password" placeholder="Password" required />
             </div>
           </div>
 

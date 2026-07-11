@@ -5,9 +5,10 @@
 import { renderSidebar, initSidebar } from '../components/sidebar.js';
 import { renderTopnav } from '../components/topnav.js';
 import { renderStatCard } from '../components/stat-card.js';
-import { getTotalStats, getActivities, getLinks } from '../store.js';
+import { getTotalStats, getActivities, getLinks, syncData } from '../store.js';
 import { formatNumber, timeAgo } from '../utils/helpers.js';
 import { getPlatform } from '../utils/platforms.js';
+import { t } from '../utils/translations.js';
 
 export function renderDashboard() {
   const stats = getTotalStats();
@@ -18,17 +19,17 @@ export function renderDashboard() {
     <div class="dashboard-layout">
       ${renderSidebar('dashboard')}
 
-      ${renderTopnav('Dashboard')}
+      ${renderTopnav(t('dashboardTitle'))}
 
       <main class="main-content page-enter">
-        <h1 class="page-title">Dashboard</h1>
-        <p class="page-subtitle">Welcome back, Alex! Here's what's happening with your music.</p>
+        <h1 class="page-title">${t('dashboardTitle')}</h1>
+        <p class="page-subtitle">${t('dashboardSub')}</p>
 
         <!-- Stats Grid -->
         <div class="stats-grid stagger-children">
           ${renderStatCard({
             icon: 'link',
-            label: 'Total Links',
+            label: t('totalLinks'),
             value: stats.totalLinks,
             change: 12,
             iconBg: 'rgba(29, 185, 84, 0.12)',
@@ -36,7 +37,7 @@ export function renderDashboard() {
           })}
           ${renderStatCard({
             icon: 'music',
-            label: 'Platforms',
+            label: t('platforms'),
             value: stats.totalPlatforms,
             change: 8,
             iconBg: 'rgba(139, 92, 246, 0.12)',
@@ -44,7 +45,7 @@ export function renderDashboard() {
           })}
           ${renderStatCard({
             icon: 'mouse-pointer-click',
-            label: 'Total Clicks',
+            label: t('totalClicks'),
             value: formatNumber(stats.totalClicks),
             change: 23.5,
             iconBg: 'rgba(59, 130, 246, 0.12)',
@@ -52,7 +53,7 @@ export function renderDashboard() {
           })}
           ${renderStatCard({
             icon: 'eye',
-            label: 'Profile Views',
+            label: t('profileViews'),
             value: formatNumber(stats.totalViews),
             change: 18,
             iconBg: 'rgba(245, 158, 11, 0.12)',
@@ -64,7 +65,7 @@ export function renderDashboard() {
         <div class="bottom-grid">
           <!-- Recent Activities -->
           <div class="recent-card">
-            <h3 class="recent-card-title">Recent Activities</h3>
+            <h3 class="recent-card-title">${t('recentActivities')}</h3>
             ${activities.map(act => {
               const iconMap = {
                 click: { icon: 'mouse-pointer-click', bg: 'rgba(29, 185, 84, 0.12)', color: '#1DB954' },
@@ -89,24 +90,24 @@ export function renderDashboard() {
 
           <!-- Quick Actions -->
           <div class="recent-card">
-            <h3 class="recent-card-title">Quick Actions</h3>
+            <h3 class="recent-card-title">${t('quickActions')}</h3>
             <div class="quick-actions-grid">
               <a href="#/links" class="quick-action-btn">
                 <i data-lucide="plus-circle"></i>
-                Add New Link
+                ${t('addNewLinkBtn')}
               </a>
               <a href="#/profile" class="quick-action-btn">
                 <i data-lucide="user-circle"></i>
-                Edit Profile
+                ${t('editProfile')}
               </a>
               <a href="#/public" class="quick-action-btn">
                 <i data-lucide="external-link"></i>
-                Public Profile
+                ${t('publicProfile')}
               </a>
             </div>
 
             <div class="divider"></div>
-            <h3 class="recent-card-title">Recent Links</h3>
+            <h3 class="recent-card-title">${t('recentLinks')}</h3>
             ${recentLinks.map(link => {
               const p = getPlatform(link?.platform || '');
               return `
@@ -115,10 +116,10 @@ export function renderDashboard() {
                     <span style="font-size:16px;">${p.icon}</span>
                   </div>
                   <div class="recent-item-content">
-                    <div class="recent-item-title">${link?.title || 'Untitled'}</div>
+                    <div class="recent-item-title">${link?.title || t('untitled')}</div>
                     <div class="recent-item-subtitle">${p.name}</div>
                   </div>
-                  <div class="recent-item-meta">${formatNumber(link?.clicks || 0)} clicks</div>
+                  <div class="recent-item-meta">${formatNumber(link?.clicks || 0)} ${t('clicks')}</div>
                 </div>
               `;
             }).join('')}
@@ -128,8 +129,6 @@ export function renderDashboard() {
     </div>
   `;
 }
-
-import { syncData } from '../store.js';
 
 export function initDashboard() {
   initSidebar();

@@ -6,35 +6,37 @@ import { renderSidebar, initSidebar } from '../components/sidebar.js';
 import { renderTopnav } from '../components/topnav.js';
 import { getSettings, updateSettings } from '../store.js';
 import { showToast } from '../components/toast.js';
+import { t, getCurrentLang } from '../utils/translations.js';
 
 export function renderSettings() {
   const settings = getSettings();
   const isDark = settings.theme === 'dark';
+  const lang = getCurrentLang();
 
   return `
     <div class="dashboard-layout">
       ${renderSidebar('settings')}
-      ${renderTopnav('Settings')}
+      ${renderTopnav(t('settingsTitle'))}
 
       <main class="main-content page-enter">
         <div class="settings-page">
-          <h1 class="page-title">Settings</h1>
-          <p class="page-subtitle">Customize your MusicLink experience.</p>
+          <h1 class="page-title">${t('settingsTitle')}</h1>
+          <p class="page-subtitle">${t('settingsSub')}</p>
 
           <!-- Appearance -->
           <div class="settings-section">
             <div class="settings-section-header">
               <h3 class="settings-section-title">
                 <i data-lucide="palette"></i>
-                Appearance
+                ${t('appearance')}
               </h3>
-              <p class="settings-section-subtitle">Choose how MusicLink looks to you.</p>
+              <p class="settings-section-subtitle">${t('appearanceDesc')}</p>
             </div>
 
             <div class="settings-row">
               <div class="settings-row-info">
-                <div class="settings-row-title">Theme</div>
-                <div class="settings-row-description">Select your preferred theme</div>
+                <div class="settings-row-title">${t('theme')}</div>
+                <div class="settings-row-description">${t('themePref')}</div>
               </div>
               <div class="theme-options">
                 <div>
@@ -44,7 +46,7 @@ export function renderSettings() {
                       <div class="theme-dot" style="background:#8B5CF6;"></div>
                     </div>
                   </div>
-                  <div class="theme-label">Dark</div>
+                  <div class="theme-label">${t('dark')}</div>
                 </div>
                 <div>
                   <div class="theme-option theme-option-light ${!isDark ? 'active' : ''}" data-theme-value="light">
@@ -53,23 +55,19 @@ export function renderSettings() {
                       <div class="theme-dot" style="background:#8B5CF6;"></div>
                     </div>
                   </div>
-                  <div class="theme-label">Light</div>
+                  <div class="theme-label">${t('light')}</div>
                 </div>
               </div>
             </div>
 
             <div class="settings-row">
               <div class="settings-row-info">
-                <div class="settings-row-title">Language</div>
-                <div class="settings-row-description">Choose your language preference</div>
+                <div class="settings-row-title">${t('language')}</div>
+                <div class="settings-row-description">${t('languagePref')}</div>
               </div>
               <select class="select" style="max-width:200px;" id="settings-language">
-                <option value="en" ${settings.language === 'en' ? 'selected' : ''}>English</option>
-                <option value="id" ${settings.language === 'id' ? 'selected' : ''}>Bahasa Indonesia</option>
-                <option value="es" ${settings.language === 'es' ? 'selected' : ''}>Español</option>
-                <option value="fr" ${settings.language === 'fr' ? 'selected' : ''}>Français</option>
-                <option value="de" ${settings.language === 'de' ? 'selected' : ''}>Deutsch</option>
-                <option value="ja" ${settings.language === 'ja' ? 'selected' : ''}>日本語</option>
+                <option value="en" ${lang === 'en' ? 'selected' : ''}>English</option>
+                <option value="id" ${lang === 'id' ? 'selected' : ''}>Bahasa Indonesia</option>
               </select>
             </div>
           </div>
@@ -79,15 +77,15 @@ export function renderSettings() {
             <div class="settings-section-header">
               <h3 class="settings-section-title">
                 <i data-lucide="bell"></i>
-                Notifications
+                ${t('notifications')}
               </h3>
-              <p class="settings-section-subtitle">Manage your notification preferences.</p>
+              <p class="settings-section-subtitle">${t('notifDesc')}</p>
             </div>
 
             <div class="settings-row">
               <div class="settings-row-info">
-                <div class="settings-row-title">Email Notifications</div>
-                <div class="settings-row-description">Receive updates via email</div>
+                <div class="settings-row-title">${t('emailNotif')}</div>
+                <div class="settings-row-description">${t('emailNotifDesc')}</div>
               </div>
               <label class="toggle">
                 <input type="checkbox" ${settings.notifications.email ? 'checked' : ''} data-setting="email" />
@@ -97,8 +95,8 @@ export function renderSettings() {
 
             <div class="settings-row">
               <div class="settings-row-info">
-                <div class="settings-row-title">Push Notifications</div>
-                <div class="settings-row-description">Receive push notifications in browser</div>
+                <div class="settings-row-title">${t('pushNotif')}</div>
+                <div class="settings-row-description">${t('pushNotifDesc')}</div>
               </div>
               <label class="toggle">
                 <input type="checkbox" ${settings.notifications.push ? 'checked' : ''} data-setting="push" />
@@ -108,8 +106,8 @@ export function renderSettings() {
 
             <div class="settings-row">
               <div class="settings-row-info">
-                <div class="settings-row-title">Weekly Report</div>
-                <div class="settings-row-description">Get a weekly summary of your performance</div>
+                <div class="settings-row-title">${t('weeklyReport')}</div>
+                <div class="settings-row-description">${t('weeklyReportDesc')}</div>
               </div>
               <label class="toggle">
                 <input type="checkbox" ${settings.notifications.weekly ? 'checked' : ''} data-setting="weekly" />
@@ -119,8 +117,8 @@ export function renderSettings() {
 
             <div class="settings-row">
               <div class="settings-row-info">
-                <div class="settings-row-title">Milestone Alerts</div>
-                <div class="settings-row-description">Get notified when you reach milestones</div>
+                <div class="settings-row-title">${t('milestoneAlerts')}</div>
+                <div class="settings-row-description">${t('milestoneDesc')}</div>
               </div>
               <label class="toggle">
                 <input type="checkbox" ${settings.notifications.milestones ? 'checked' : ''} data-setting="milestones" />
@@ -134,27 +132,27 @@ export function renderSettings() {
             <div class="settings-section-header">
               <h3 class="settings-section-title">
                 <i data-lucide="shield"></i>
-                Security
+                ${t('security')}
               </h3>
-              <p class="settings-section-subtitle">Manage your password and account security.</p>
+              <p class="settings-section-subtitle">${t('securityDesc')}</p>
             </div>
 
             <div class="settings-password-form">
               <div class="input-group">
-                <label>Current Password</label>
-                <input type="password" class="input" placeholder="Enter current password" />
+                <label>${t('currentPassword')}</label>
+                <input type="password" class="input" id="input-current-password" placeholder="${t('currentPassPlaceholder')}" />
               </div>
               <div class="input-group">
-                <label>New Password</label>
-                <input type="password" class="input" placeholder="Enter new password" />
+                <label>${t('newPassword')}</label>
+                <input type="password" class="input" id="input-new-password" placeholder="${t('newPassPlaceholder')}" />
               </div>
               <div class="input-group">
-                <label>Confirm New Password</label>
-                <input type="password" class="input" placeholder="Confirm new password" />
+                <label>${t('confirmPassword')}</label>
+                <input type="password" class="input" id="input-confirm-password" placeholder="${t('confirmPassPlaceholder')}" />
               </div>
               <button class="btn btn-primary" id="change-password-btn" style="align-self:flex-start;">
                 <i data-lucide="key" style="width:16px;height:16px;"></i>
-                Change Password
+                ${t('changePassword')}
               </button>
             </div>
           </div>
@@ -164,19 +162,19 @@ export function renderSettings() {
             <div class="settings-section-header">
               <h3 class="settings-section-title">
                 <i data-lucide="alert-triangle"></i>
-                Danger Zone
+                ${t('dangerZone')}
               </h3>
-              <p class="settings-section-subtitle">Irreversible and destructive actions.</p>
+              <p class="settings-section-subtitle">${t('dangerDesc')}</p>
             </div>
 
             <div class="settings-row">
               <div class="settings-row-info">
-                <div class="settings-row-title">Delete Account</div>
-                <div class="settings-row-description">Permanently delete your account and all data</div>
+                <div class="settings-row-title">${t('deleteAccount')}</div>
+                <div class="settings-row-description">${t('deleteAccountDesc')}</div>
               </div>
               <button class="btn btn-danger" id="delete-account-btn">
                 <i data-lucide="trash-2" style="width:16px;height:16px;"></i>
-                Delete Account
+                ${t('deleteAccount')}
               </button>
             </div>
           </div>
@@ -186,147 +184,45 @@ export function renderSettings() {
   `;
 }
 
-// ── i18n dictionary (minimal) ──
-export const I18N = {
-  en: {
-    dashboard: 'Dashboard',
-    profile:   'My Profile',
-    links:     'Music Links',
-    settings:  'Settings',
-    pageTitle: 'Settings',
-    pageSub:   'Customize your MusicLink experience.',
-    appearance:'Appearance',
-    theme:     'Theme',
-    language:  'Language',
-    notifications: 'Notifications',
-    notifDesc1: 'Manage your notification preferences.',
-    notifLabel1: 'Email Updates',
-    notifSub1: 'Receive updates via email',
-    notifLabel2: 'Push Notifications',
-    notifSub2: 'Get push notifications',
-    notifLabel3: 'Weekly Report',
-    notifSub3: 'Receive weekly analytics report',
-    notifLabel4: 'Milestones',
-    notifSub4: 'Get notified when you reach a milestone',
-    security:  'Security',
-    secDesc:   'Manage your account security.',
-    dangerZone:'Danger Zone',
-    dangerDesc:'Irreversible and destructive actions.',
-    delTitle:  'Delete Account',
-    delDesc:   'Permanently delete your account and all data',
-  },
-  id: {
-    dashboard: 'Dasbor',
-    profile:   'Profil Saya',
-    links:     'Tautan Musik',
-    settings:  'Pengaturan',
-    pageTitle: 'Pengaturan',
-    pageSub:   'Sesuaikan pengalaman MusicLink Anda.',
-    appearance:'Tampilan',
-    theme:     'Tema',
-    language:  'Bahasa',
-    notifications: 'Notifikasi',
-    notifDesc1: 'Kelola preferensi notifikasi Anda.',
-    notifLabel1: 'Pembaruan Email',
-    notifSub1: 'Terima pembaruan via email',
-    notifLabel2: 'Notifikasi Push',
-    notifSub2: 'Dapatkan notifikasi push',
-    notifLabel3: 'Laporan Mingguan',
-    notifSub3: 'Terima laporan analitik mingguan',
-    notifLabel4: 'Pencapaian',
-    notifSub4: 'Dapatkan notifikasi saat mencapai target',
-    security:  'Keamanan',
-    secDesc:   'Kelola keamanan akun Anda.',
-    dangerZone:'Zona Berbahaya',
-    dangerDesc:'Tindakan yang tidak dapat dibatalkan.',
-    delTitle:  'Hapus Akun',
-    delDesc:   'Hapus akun Anda beserta datanya secara permanen',
-  },
-};
-
+/**
+ * applyLanguage — Simpan bahasa ke localStorage dan dispatch event global.
+ * Seluruh halaman yang mendengarkan 'lang-changed' akan melakukan re-render.
+ * @param {string} lang - Kode bahasa ('en' | 'id' | ...)
+ */
 export function applyLanguage(lang) {
-  const t = I18N[lang] || I18N.en;
   localStorage.setItem('lang', lang);
-
-  // Update page title + subtitle
-  const pageTitle = document.querySelector('.settings-page .page-title');
-  const pageSub   = document.querySelector('.settings-page .page-subtitle');
-  if (pageTitle) pageTitle.textContent = t.pageTitle;
-  if (pageSub)   pageSub.textContent   = t.pageSub;
-
-  // Update section titles and subtitles
-  const sections = document.querySelectorAll('.settings-section-title');
-  sections.forEach(el => {
-    const icon = el.querySelector('i');
-    const iconHtml = icon ? icon.outerHTML : '';
-    const txt = el.textContent.trim().toLowerCase();
-    const parent = el.closest('.settings-section');
-    const subtitle = parent ? parent.querySelector('.settings-section-subtitle') : null;
-
-    if (txt.includes('appear') || txt.includes('tampil')) {
-      el.innerHTML = iconHtml + ' ' + t.appearance;
-    } else if (txt.includes('notif')) {
-      el.innerHTML = iconHtml + ' ' + t.notifications;
-      if (subtitle) subtitle.textContent = t.notifDesc1;
-      if (parent) {
-         const titles = parent.querySelectorAll('.settings-row-title');
-         const desc = parent.querySelectorAll('.settings-row-description');
-         if(titles[0]) titles[0].textContent = t.notifLabel1;
-         if(desc[0]) desc[0].textContent = t.notifSub1;
-         if(titles[1]) titles[1].textContent = t.notifLabel2;
-         if(desc[1]) desc[1].textContent = t.notifSub2;
-         if(titles[2]) titles[2].textContent = t.notifLabel3;
-         if(desc[2]) desc[2].textContent = t.notifSub3;
-         if(titles[3]) titles[3].textContent = t.notifLabel4;
-         if(desc[3]) desc[3].textContent = t.notifSub4;
-      }
-    } else if (txt.includes('secur') || txt.includes('keaman')) {
-      el.innerHTML = iconHtml + ' ' + t.security;
-      if (subtitle) subtitle.textContent = t.secDesc;
-    } else if (txt.includes('danger') || txt.includes('berba')) {
-      el.innerHTML = iconHtml + ' ' + t.dangerZone;
-      if (subtitle) subtitle.textContent = t.dangerDesc;
-      if (parent) {
-         const dTitle = parent.querySelector('.settings-row-title');
-         const dDesc = parent.querySelector('.settings-row-description');
-         if(dTitle) dTitle.textContent = t.delTitle;
-         if(dDesc) dDesc.textContent = t.delDesc;
-      }
-    }
-  });
-
-  // Update sidebar nav labels (if sidebar is in DOM)
-  const navMap = {
-    'dashboard':  t.dashboard,
-    'profile':    t.profile,
-    'links':      t.links,
-    'settings':   t.settings,
-  };
-  document.querySelectorAll('.sidebar-link[data-page]').forEach(link => {
-    const page = link.dataset.page;
-    if (navMap[page]) {
-      const span = link.querySelector('span:not(.sidebar-admin-badge)');
-      if (span) span.textContent = navMap[page];
-    }
-  });
+  // Dispatch event global agar router.js bisa re-render halaman yang aktif
+  window.dispatchEvent(new CustomEvent('lang-changed', { detail: { lang } }));
 }
 
 export function initSettings() {
   initSidebar();
 
-  // Apply saved language on load
-  const savedLang = localStorage.getItem('lang') || 'en';
+  // Language change — re-render seluruh halaman secara reaktif (anti-flicker, anti-redirect)
   const langSelect = document.getElementById('settings-language');
-  if (langSelect) langSelect.value = savedLang;
-  applyLanguage(savedLang);
-
-  // Language change
   langSelect?.addEventListener('change', (e) => {
-    applyLanguage(e.target.value);
-    showToast(
-      e.target.value === 'id' ? 'Bahasa diubah ke Bahasa Indonesia 🇮🇩' : 'Language changed to English 🇬🇧',
-      'success'
-    );
+    const newLang = e.target.value;
+
+    // 1. Simpan ke localStorage terlebih dahulu agar t() membaca nilai baru
+    localStorage.setItem('lang', newLang);
+
+    // 2. Tampilkan toast dengan teks yang sudah ter-translate
+    showToast(t('langChanged'), 'success');
+
+    // 3. Re-render halaman Settings secara in-place (TANPA redirect / reload)
+    //    User tetap di halaman Pengaturan — sidebar tidak desync.
+    const app = document.getElementById('app');
+    if (app) {
+      app.innerHTML = renderSettings();
+      if (window.lucide) lucide.createIcons();
+      // Inisialisasi ulang listener setelah re-render
+      // CATATAN: initSettings() tidak memanggil applyLanguage() di sini
+      // untuk menghindari double-dispatch event 'lang-changed' ke router.
+      initSettings();
+    }
+    // 4. Tidak perlu applyLanguage() / dispatchEvent di sini:
+    //    Settings sudah di-render ulang dengan bahasa baru secara langsung.
+    //    Router tidak perlu di-notify karena kita masih di halaman yang sama.
   });
 
   // Theme toggle
@@ -347,13 +243,13 @@ export function initSettings() {
       const key = e.target.dataset.setting;
       const settings = getSettings();
       settings.notifications[key] = e.target.checked;
-      showToast('Settings updated', 'success');
+      showToast(t('settingsUpdated'), 'success');
     });
   });
 
   // Change password
   document.getElementById('change-password-btn')?.addEventListener('click', () => {
-    showToast('Password changed successfully!', 'success');
+    showToast(t('passwordChanged'), 'success');
   });
 
   // Delete account
