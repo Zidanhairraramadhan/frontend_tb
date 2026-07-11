@@ -167,6 +167,11 @@ export function openModal(editData = null) {
               value="${editData?.title || ''}" required />
           </div>
 
+          <div class="input-group" id="embed-toggle-group" style="display: ${['spotify', 'youtube', 'soundcloud', 'applemusic'].includes(editData?.platform) ? 'flex' : 'none'}; align-items: center; gap: 8px; flex-direction: row; margin-bottom: 16px;">
+            <input type="checkbox" id="link-embed" name="embed" ${editData === null || editData.embed !== false ? 'checked' : ''} style="width: 18px; height: 18px; cursor: pointer;" />
+            <label for="link-embed" style="margin-bottom: 0; cursor: pointer; font-weight: 500;">Tampilkan sebagai Pemutar Musik (Embed Player)</label>
+          </div>
+
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" id="modal-cancel-btn">Cancel</button>
             <button type="submit" class="btn btn-primary" id="modal-submit-btn">
@@ -198,6 +203,17 @@ export function openModal(editData = null) {
     // Set judul default atau kosongkan jika platform dihapus
     if (titleInput) {
       titleInput.value = p ? `Listen on ${p.name}` : '';
+    }
+
+    // Tampilkan / sembunyikan toggle embed player
+    const embedGroup = document.getElementById('embed-toggle-group');
+    if (embedGroup) {
+      const showEmbed = ['spotify', 'youtube', 'soundcloud', 'applemusic'].includes(e.target.value);
+      embedGroup.style.display = showEmbed ? 'flex' : 'none';
+      if (showEmbed) {
+        const embedCheckbox = document.getElementById('link-embed');
+        if (embedCheckbox) embedCheckbox.checked = true;
+      }
     }
 
     // Sembunyikan preview card
@@ -235,6 +251,7 @@ export function openModal(editData = null) {
       url:       formData.get('url'),
       // Fix #3 (sumber): simpan image_url dari hasil autofill agar backend bisa menyimpannya
       image_url: _lastFetchedImageUrl || editData?.image_url || '',
+      embed:     formData.get('embed') === 'on',
     };
 
     try {

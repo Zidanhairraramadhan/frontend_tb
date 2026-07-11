@@ -552,3 +552,34 @@
   display: block;
 }
 
+/* ── SoundCloud variant ── */
+.embed-player--soundcloud {
+  background: linear-gradient(135deg, rgba(255, 85, 0, 0.08) 0%, rgba(255, 85, 0, 0.03) 100%);
+  border: 1px solid rgba(255, 85, 0, 0.22);
+}
+
+.embed-player--soundcloud:hover {
+  border-color: rgba(255, 85, 0, 0.38);
+}
+
+.embed-player__badge--soundcloud {
+  background: rgba(255, 85, 0, 0.14);
+  color: #FF5500;
+}
+
+/* ── Apple Music variant ── */
+.embed-player--applemusic {
+  background: linear-gradient(135deg, rgba(252, 60, 68, 0.08) 0%, rgba(252, 60, 68, 0.03) 100%);
+  border: 1px solid rgba(252, 60, 68, 0.22);
+}
+
+.embed-player--applemusic:hover {
+  border-color: rgba(252, 60, 68, 0.38);
+}
+
+.embed-player__badge--applemusic {
+  background: rgba(252, 60, 68, 0.14);
+  color: #FC3C44;
+}
+
+
