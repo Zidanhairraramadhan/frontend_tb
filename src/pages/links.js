@@ -9,6 +9,7 @@ import { getPlatform } from '../utils/platforms.js';
 import { formatNumber } from '../utils/helpers.js';
 import { openModal } from '../components/modal.js';
 import { showToast } from '../components/toast.js';
+import { t } from '../utils/translations.js';
 
 function renderLinkCards() {
   const links = getLinks();
@@ -19,11 +20,11 @@ function renderLinkCards() {
         <div class="empty-state-icon">
           <i data-lucide="link" style="width:32px;height:32px;"></i>
         </div>
-        <h3 class="empty-state-title">No links yet</h3>
-        <p class="empty-state-text">Add your first music link to start sharing your music with the world.</p>
+        <h3 class="empty-state-title">${t('noLinksYet')}</h3>
+        <p class="empty-state-text">${t('noLinksSub')}</p>
         <button class="btn btn-primary" id="empty-add-btn">
           <i data-lucide="plus" style="width:16px;height:16px;"></i>
-          Add Your First Link
+          ${t('addYourFirstLink')}
         </button>
       </div>
     `;
@@ -36,7 +37,7 @@ function renderLinkCards() {
         return `
           <div class="link-card" data-link-id="${link?.id || ''}">
             <div class="link-card-header">
-              <!-- Fix #3: Tampilkan cover album jika ada, fallback ke ikon platform -->
+              <!-- Tampilkan cover album jika ada, fallback ke ikon platform -->
               <div class="link-card-icon" style="background:${p.bgColor};color:${p.color};overflow:hidden;padding:0;">
                 ${link?.image_url
                   ? `<img src="${link.image_url}" alt="cover"
@@ -47,7 +48,7 @@ function renderLinkCards() {
                 }
               </div>
               <div class="link-card-info">
-                <div class="link-card-title">${link?.title || 'Untitled'}</div>
+                <div class="link-card-title">${link?.title || t('untitled')}</div>
                 <div class="link-card-platform">${p.name}</div>
               </div>
               <div class="link-status">
@@ -67,11 +68,11 @@ function renderLinkCards() {
               <div class="link-card-stats">
                 <div class="link-card-stat">
                   <i data-lucide="mouse-pointer-click"></i>
-                  ${formatNumber(link?.clicks || 0)} clicks
+                  ${formatNumber(link?.clicks || 0)} ${t('clicks')}
                 </div>
                 <div class="link-card-stat">
                   <span class="status-dot ${link?.active ? 'status-dot-active' : 'status-dot-inactive'}"></span>
-                  ${link?.active ? 'Active' : 'Inactive'}
+                  ${link?.active ? t('active') : t('inactive')}
                 </div>
               </div>
               <div class="link-card-actions">
@@ -94,22 +95,22 @@ export function renderLinks() {
   return `
     <div class="dashboard-layout">
       ${renderSidebar('links')}
-      ${renderTopnav('Music Links')}
+      ${renderTopnav(t('musicLinksTitle'))}
 
       <main class="main-content page-enter">
-        <h1 class="page-title">Music Links</h1>
-        <p class="page-subtitle">Manage all your music streaming and social links.</p>
+        <h1 class="page-title">${t('musicLinksTitle')}</h1>
+        <p class="page-subtitle">${t('musicLinksSub')}</p>
 
         <!-- Toolbar -->
         <div class="links-toolbar">
           <div class="links-toolbar-left">
             <div class="links-search">
               <i data-lucide="search"></i>
-              <input type="text" class="input" placeholder="Search links..." id="links-search-input" />
+              <input type="text" class="input" placeholder="${t('searchLinks')}" id="links-search-input" />
             </div>
             <div class="links-filter">
               <select class="select" id="links-filter">
-                <option value="all">All Platforms</option>
+                <option value="all">${t('allPlatforms')}</option>
                 <option value="spotify">🎵 Spotify</option>
                 <option value="applemusic">🍎 Apple Music</option>
                 <option value="youtube">▶️ YouTube</option>
@@ -119,7 +120,7 @@ export function renderLinks() {
           </div>
           <button class="btn btn-primary" id="add-link-btn">
             <i data-lucide="plus" style="width:16px;height:16px;"></i>
-            Add Link
+            ${t('addLink')}
           </button>
         </div>
 
@@ -128,12 +129,12 @@ export function renderLinks() {
           <div style="text-align: center; padding: 60px 20px; color: var(--text-tertiary);">
             <div class="skeleton" style="height: 24px; width: 200px; margin: 0 auto 12px; border-radius: 12px;"></div>
             <div class="skeleton" style="height: 16px; width: 140px; margin: 0 auto; border-radius: 8px;"></div>
-            <p style="margin-top: 16px;">Loading links data...</p>
+            <p style="margin-top: 16px;">${t('loadingLinks')}</p>
           </div>
         </div>
 
         <!-- FAB for mobile -->
-        <button class="fab" id="fab-add-link" title="Add Link">
+        <button class="fab" id="fab-add-link" title="${t('addLink')}">
           <i data-lucide="plus"></i>
         </button>
       </main>
@@ -163,7 +164,6 @@ export function initLinks() {
 
     if (editBtn) {
       const id = editBtn.dataset.editId;
-      // Get GORM DB ID type is float/uint, cast search locally
       const link = getLinks().find(l => String(l.id) === String(id));
       if (link) openModal(link);
     }
@@ -172,7 +172,7 @@ export function initLinks() {
       const id = deleteBtn.dataset.deleteId;
       try {
         await deleteLink(Number(id) || id);
-        showToast('Link deleted', 'info');
+        showToast(t('linkDeleted'), 'info');
         refreshLinks();
       } catch (err) {
         showToast(err.message, 'error');
@@ -186,7 +186,7 @@ export function initLinks() {
       const id = toggle.dataset.toggleId;
       try {
         await toggleLinkStatus(Number(id) || id);
-        showToast(`Link ${toggle.checked ? 'activated' : 'deactivated'}`, 'info');
+        showToast(toggle.checked ? t('linkActivated') : t('linkDeactivated'), 'info');
         refreshLinks();
       } catch (err) {
         showToast(err.message, 'error');
@@ -217,15 +217,28 @@ export function initLinks() {
     });
   });
 
-  // Listen for link updates
+  // Listen for link updates (e.g., from modal)
   window.addEventListener('links-updated', refreshLinks);
+
+  // Listen for language changes — re-render the page reactively
+  window.addEventListener('lang-changed', () => {
+    const app = document.getElementById('app');
+    if (app && document.querySelector('.page-title')) {
+      // Re-render the entire links page with the new language
+      import('../router.js').then(({ navigateTo }) => {
+        app.innerHTML = renderLinks();
+        if (window.lucide) lucide.createIcons();
+        initLinks();
+      });
+    }
+  });
 }
 
 function refreshLinks() {
   const container = document.getElementById('links-container');
   if (!container) return;
 
-  // Fix #2: Sinkronkan dari backend terlebih dahulu, lalu render ulang
+  // Sinkronkan dari backend terlebih dahulu, lalu render ulang
   syncLinks()
     .catch(() => {}) // silent fail — tetap render dari state lokal
     .finally(() => {

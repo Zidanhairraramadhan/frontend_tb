@@ -13,6 +13,7 @@ import './styles/profile.css';
 import './styles/links.css';
 import './styles/settings.css';
 import './styles/public-profile.css';
+import './styles/mobile.css'; // Responsive overrides — must be last
 
 // ── Import Router ──
 import { initRouter } from './router.js';

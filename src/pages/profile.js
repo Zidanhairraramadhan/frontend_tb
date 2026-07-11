@@ -6,6 +6,7 @@ import { renderSidebar, initSidebar } from '../components/sidebar.js';
 import { renderTopnav } from '../components/topnav.js';
 import { getUser, updateUser } from '../store.js';
 import { showToast } from '../components/toast.js';
+import { t } from '../utils/translations.js';
 
 function getAverageColor(imgElement) {
   const canvas = document.createElement('canvas');
@@ -41,11 +42,11 @@ export function renderProfile() {
   return `
     <div class="dashboard-layout">
       ${renderSidebar('profile')}
-      ${renderTopnav('My Profile')}
+      ${renderTopnav(t('myProfileTitle'))}
 
       <main class="main-content page-enter">
-        <h1 class="page-title">My Profile</h1>
-        <p class="page-subtitle">Manage your artist profile and appearance.</p>
+        <h1 class="page-title">${t('myProfileTitle')}</h1>
+        <p class="page-subtitle">${t('myProfileSub')}</p>
 
         <!-- Hidden File Inputs -->
         <input type="file" id="cover-input" accept="image/*" hidden />
@@ -57,7 +58,7 @@ export function renderProfile() {
           <div class="profile-cover-overlay">
             <button class="btn btn-secondary btn-sm" id="btn-change-cover">
               <i data-lucide="camera" style="width:14px;height:14px;"></i>
-              Change Cover
+              ${t('changeCover')}
             </button>
           </div>
         </div>
@@ -66,13 +67,13 @@ export function renderProfile() {
         <div class="profile-avatar-section">
           <div class="profile-avatar-wrapper">
             <div class="profile-avatar" id="profile-avatar-preview" style="background-size: cover; background-position: center; ${user?.avatar_url ? 'background-image: url(' + user.avatar_url + ');' : ''}">${user?.avatar_url ? '' : (user?.username || '?')[0].toUpperCase()}</div>
-            <button class="profile-avatar-edit" id="btn-change-avatar" title="Change photo">
+            <button class="profile-avatar-edit" id="btn-change-avatar" title="${t('changeCover')}">
               <i data-lucide="camera"></i>
             </button>
           </div>
           <div class="profile-info">
-            <h2>${user?.username || 'Unknown'}</h2>
-            <p>@${user?.username || ''} · ${user?.genre || 'Musician'}</p>
+            <h2>${user?.username || t('unknown')}</h2>
+            <p>@${user?.username || ''} · ${user?.genre || t('musician')}</p>
           </div>
         </div>
 
@@ -83,24 +84,24 @@ export function renderProfile() {
             <div class="profile-section">
               <h3 class="profile-section-title">
                 <i data-lucide="user"></i>
-                Basic Information
+                ${t('basicInformation')}
               </h3>
               <form class="auth-form" id="profile-form">
                 <div class="profile-form-grid">
                   <div class="input-group">
-                    <label>Artist Name</label>
+                    <label>${t('artistName')}</label>
                     <input type="text" class="input" id="profile-name" value="${user?.username || ''}" />
                   </div>
                   <div class="input-group">
-                    <label>Username</label>
+                    <label>${t('username')}</label>
                     <input type="text" class="input" id="profile-username" value="${user?.username || ''}" />
                   </div>
                   <div class="input-group profile-form-full">
-                    <label>Bio</label>
+                    <label>${t('bio')}</label>
                     <textarea class="input" id="profile-bio" rows="3">${user?.bio || ''}</textarea>
                   </div>
                   <div class="input-group">
-                    <label>Genre</label>
+                    <label>${t('genre')}</label>
                     <select class="select" id="profile-genre">
                       <option ${user.genre === 'Electronic / House' ? 'selected' : ''}>Electronic / House</option>
                       <option ${user.genre === 'Hip Hop / Rap' ? 'selected' : ''}>Hip Hop / Rap</option>
@@ -115,7 +116,7 @@ export function renderProfile() {
                     </select>
                   </div>
                   <div class="input-group">
-                    <label>Country</label>
+                    <label>${t('country')}</label>
                     <select class="select" id="profile-country">
                       <option ${user.country === 'United States' ? 'selected' : ''}>United States</option>
                       <option ${user.country === 'United Kingdom' ? 'selected' : ''}>United Kingdom</option>
@@ -133,11 +134,11 @@ export function renderProfile() {
                 <div class="profile-actions">
                   <a href="#/public" class="btn btn-secondary">
                     <i data-lucide="eye" style="width:16px;height:16px;"></i>
-                    Preview
+                    ${t('preview')}
                   </a>
                   <button type="submit" class="btn btn-primary">
                     <i data-lucide="check" style="width:16px;height:16px;"></i>
-                    Save Changes
+                    ${t('saveChanges')}
                   </button>
                 </div>
               </form>
@@ -147,7 +148,7 @@ export function renderProfile() {
             <div class="profile-section">
               <h3 class="profile-section-title">
                 <i data-lucide="share-2"></i>
-                Social Media
+                ${t('socialMedia')}
               </h3>
               <div class="profile-form-grid">
                 <div class="input-group">
@@ -165,14 +166,14 @@ export function renderProfile() {
           <!-- Preview Column -->
           <div>
             <div class="profile-preview">
-              <div class="profile-preview-title">Social Preview</div>
+              <div class="profile-preview-title">${t('socialPreview')}</div>
               <div class="profile-preview-card">
                 <div class="profile-preview-avatar" id="preview-avatar" style="${user?.avatar_url ? 'background-image: url(' + user.avatar_url + '); background-size: cover; background-position: center;' : ''}">${user?.avatar_url ? '' : (user?.username || '?')[0].toUpperCase()}</div>
-                <div class="profile-preview-name" id="preview-name">${user?.username || 'Unknown'}</div>
+                <div class="profile-preview-name" id="preview-name">${user?.username || t('unknown')}</div>
                 <div class="profile-preview-bio" id="preview-bio">${user?.bio || ''}</div>
                 <div class="profile-preview-meta">
-                  <span><i data-lucide="map-pin" style="width:12px;height:12px;"></i> ${user?.country || 'Worldwide'}</span>
-                  <span><i data-lucide="music" style="width:12px;height:12px;"></i> ${user?.genre || 'Musician'}</span>
+                  <span><i data-lucide="map-pin" style="width:12px;height:12px;"></i> ${user?.country || t('worldwide')}</span>
+                  <span><i data-lucide="music" style="width:12px;height:12px;"></i> ${user?.genre || t('musician')}</span>
                 </div>
               </div>
             </div>
@@ -300,7 +301,7 @@ export function initProfile() {
         cover_url: currentCoverUrl,
         avatarInitial: nameInput?.value.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2),
       });
-      showToast('Profile saved successfully!', 'success');
+      showToast(t('profileSaved'), 'success');
     });
   }
 }

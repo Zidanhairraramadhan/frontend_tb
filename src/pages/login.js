@@ -11,15 +11,20 @@ const LOGO_SVG = `<svg viewBox="0 0 64 64" width="36" height="36" style="flex-sh
 export function renderLogin() {
   return `
     <div class="auth-page">
+      <a href="#/" style="position: absolute; top: 24px; left: 24px; display: inline-flex; align-items: center; gap: 8px; color: var(--text-secondary); text-decoration: none; font-size: 14px; font-weight: 500; z-index: 10; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--text-secondary)'">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+        Back to Home
+      </a>
+      
       <div class="auth-bg-element auth-bg-1"></div>
       <div class="auth-bg-element auth-bg-2"></div>
 
       <div class="auth-card">
         <div class="auth-header">
-          <div class="auth-logo">
+          <a href="#/" class="auth-logo" style="text-decoration:none; cursor:pointer; display:flex; align-items:center; justify-content:center;">
             ${LOGO_SVG}
             <span>Music<span class="text-gradient">Link</span></span>
-          </div>
+          </a>
           <h1>Welcome back</h1>
           <p>Sign in to your account to continue</p>
         </div>
@@ -28,14 +33,14 @@ export function renderLogin() {
           <div class="input-group">
             <div style="position:relative;">
               <i data-lucide="user" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--text-tertiary);pointer-events:none;"></i>
-              <input type="text" class="input" style="padding-left:44px;" id="login-username" placeholder="Username" value="alex" required />
+              <input type="text" class="input" style="padding-left:44px;" id="login-username" placeholder="Username" required />
             </div>
           </div>
 
           <div class="input-group">
             <div style="position:relative;">
               <i data-lucide="lock" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--text-tertiary);pointer-events:none;"></i>
-              <input type="password" class="input" style="padding-left:44px;" id="login-password" placeholder="Password" value="password123" required />
+              <input type="password" class="input" style="padding-left:44px;" id="login-password" placeholder="Password" required />
             </div>
           </div>
 

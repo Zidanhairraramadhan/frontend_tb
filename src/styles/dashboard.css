@@ -482,50 +482,8 @@
   }
 }
 
-@media (max-width: 768px) {
-  .sidebar {
-    transform: translateX(-100%);
-    z-index: var(--z-modal);
-  }
 
-  .sidebar.open {
-    transform: translateX(0);
-  }
-
-  .sidebar-overlay {
-    position: fixed;
-    inset: 0;
-    background: var(--bg-overlay);
-    z-index: calc(var(--z-modal) - 1);
-    display: none;
-  }
-
-  .sidebar-overlay.open {
-    display: block;
-  }
-
-  .topnav {
-    left: 0;
-  }
-
-  .main-content {
-    margin-left: 0;
-    width: 100%;
-    padding: var(--space-md);
-  }
-
-  .mobile-menu-btn {
-    display: flex;
-  }
-
-  .topnav-search {
-    width: 200px;
-  }
-
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-}
+/* Mobile responsive rules are now centralized in styles/mobile.css */
 
 /* ── Sidebar Admin Badge ── */
 .sidebar-admin-badge {

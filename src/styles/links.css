@@ -215,25 +215,4 @@
   height: 24px;
 }
 
-@media (max-width: 768px) {
-  .links-toolbar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .links-toolbar-left {
-    flex-direction: column;
-  }
-
-  .links-search {
-    max-width: 100%;
-  }
-
-  .links-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .fab {
-    display: flex;
-  }
-}
+/* Mobile responsive rules are centralized in styles/mobile.css */

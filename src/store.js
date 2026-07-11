@@ -47,7 +47,7 @@ const state = {
   ],
   settings: {
     theme: localStorage.getItem('theme') || 'dark',
-    language: 'en',
+    language: localStorage.getItem('lang') || 'en',
     notifications: { email: true, push: true, weekly: true, milestones: true }
   }
 };

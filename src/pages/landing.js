@@ -4,22 +4,52 @@
 
 const LOGO_SVG = `<svg viewBox="0 0 64 64" width="32" height="32" style="flex-shrink:0;"><defs><linearGradient id="noteGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#1DB954"/><stop offset="100%" style="stop-color:#14b8a6"/></linearGradient><linearGradient id="linkGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#8B5CF6"/><stop offset="100%" style="stop-color:#6366F1"/></linearGradient></defs><rect x="2" y="2" width="60" height="60" rx="16" fill="#121212" stroke="rgba(255,255,255,0.08)" stroke-width="1.5"/><rect x="18" y="34" width="12" height="18" rx="6" fill="none" stroke="url(#noteGrad)" stroke-width="4.5" transform="rotate(-15 24 43)"/><rect x="34" y="30" width="12" height="18" rx="6" fill="none" stroke="url(#linkGrad)" stroke-width="4.5" transform="rotate(-15 40 39)"/><path d="M28 36V17" stroke="url(#noteGrad)" stroke-width="4" stroke-linecap="round"/><path d="M44 32V13" stroke="url(#linkGrad)" stroke-width="4" stroke-linecap="round"/><path d="M28 17C34 15 38 15 44 13" stroke="url(#linkGrad)" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M28 23C34 21 38 21 44 19" stroke="url(#noteGrad)" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`;
 
-// ── Rotating song playlists for hero card ──
-const HERO_SONG_SETS = [
-  // West Coast legends
-  [
-    { label: 'Kendrick Lamar', dot: '#1DB954', sub: 'HUMBLE.' },
-    { label: 'Dr. Dre',        dot: '#8B5CF6', sub: 'Still D.R.E.' },
-    { label: 'Snoop Dogg',     dot: '#FF5500', sub: 'Drop It Like It\'s Hot' },
-    { label: '2Pac',           dot: '#FC3C44', sub: 'All Eyez On Me' },
-  ],
-  // Viral TikTok hits
-  [
-    { label: 'Sabrina Carpenter', dot: '#1DB954', sub: 'Espresso' },
-    { label: 'Billie Eilish',     dot: '#00f2ea', sub: 'BIRDS OF A FEATHER' },
-    { label: 'Charli XCX',        dot: '#FF0000', sub: 'brat' },
-    { label: 'Gracie Abrams',     dot: '#8B5CF6', sub: 'That\'s So True' },
-  ],
+// ── Rotating platform playlists for hero card ──
+const PLATFORMS = [
+  {
+    name: 'Spotify',
+    handle: '@spotify',
+    logo: `<svg viewBox="0 0 24 24" width="32" height="32" fill="#1DB954"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.54.659.3 1.02zm1.44-3.3c-.301.42-.84.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.6.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>`,
+    songs: [
+      { label: 'Blinding Lights', sub: 'The Weeknd', dot: '#1DB954' },
+      { label: 'Shape of You', sub: 'Ed Sheeran', dot: '#1DB954' },
+      { label: 'Starboy', sub: 'The Weeknd', dot: '#1DB954' },
+      { label: 'Someone You Loved', sub: 'Lewis Capaldi', dot: '#1DB954' },
+    ]
+  },
+  {
+    name: 'YouTube',
+    handle: '@youtube',
+    logo: `<svg viewBox="0 0 24 24" width="32" height="32" fill="#FF0000"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`,
+    songs: [
+      { label: 'Despacito', sub: 'Luis Fonsi', dot: '#FF0000' },
+      { label: 'See You Again', sub: 'Wiz Khalifa', dot: '#FF0000' },
+      { label: 'Shape of You', sub: 'Ed Sheeran', dot: '#FF0000' },
+      { label: 'Uptown Funk', sub: 'Bruno Mars', dot: '#FF0000' },
+    ]
+  },
+  {
+    name: 'Apple Music',
+    handle: '@applemusic',
+    logo: `<svg viewBox="0 0 24 24" width="32" height="32" fill="#FA243C"><path d="M12 24C5.373 24 0 18.627 0 12S5.373 0 12 0s12 5.373 12 12-5.373 12-12 12zm2.008-16.143c-.476.577-1.196.953-1.954.912-.112-1.002.327-2.023.957-2.732.559-.623 1.393-.996 2.13-.984.116 1.042-.39 2.067-1.133 2.804zm.372 1.341c-1.464-.047-2.825.867-3.568.867-.768 0-1.892-.816-3.136-.789-1.611.036-3.109.916-3.939 2.378-1.748 3.056-.445 7.568 1.258 9.99 .82 1.173 1.776 2.454 3.003 2.404 1.192-.045 1.637-.775 3.064-.775 1.411 0 1.83.775 3.078.75 1.282-.023 2.115-1.171 2.92-2.365.938-1.378 1.328-2.709 1.348-2.778-.031-.013-2.617-1.026-2.646-4.041-.023-2.527 2.083-3.743 2.18-3.8-1.179-1.727-3.023-1.97-3.562-2.012"/></svg>`,
+    songs: [
+      { label: 'Shape of You', sub: 'Ed Sheeran', dot: '#FA243C' },
+      { label: 'Blinding Lights', sub: 'The Weeknd', dot: '#FA243C' },
+      { label: 'Dance Monkey', sub: 'Tones and I', dot: '#FA243C' },
+      { label: 'Rockstar', sub: 'Post Malone', dot: '#FA243C' },
+    ]
+  },
+  {
+    name: 'SoundCloud',
+    handle: '@soundcloud',
+    logo: `<svg viewBox="0 0 24 24" width="32" height="32" fill="#FF5500"><path d="M11.666 17.652c0 .351-.301.634-.672.634s-.672-.283-.672-.634V7.518c0-.352.301-.635.672-.635s.672.283.672.635v10.134zM9.51 17.702c0 .324-.266.587-.597.587-.332 0-.598-.263-.598-.587v-8.498c0-.324.266-.587.598-.587.331 0 .597.263.597.587v8.498zm-2.062.019c0 .285-.239.516-.532.516s-.53-.231-.53-.516V10.23c0-.285.237-.516.53-.516s.532.231.532.516v7.491zM5.3 17.67c0 .211-.186.38-.415.38s-.415-.169-.415-.38v-5.263c0-.21.186-.382.415-.382s.415.172.415.382V17.67zM3.204 17.582c0 .16-.145.289-.323.289s-.323-.129-.323-.289v-3.79c0-.161.145-.29.323-.29s.323.129.323.29v3.79zm-1.62.029c0 .121-.112.219-.247.219-.138 0-.248-.098-.248-.219v-2.148c0-.12.11-.219.248-.219.135 0 .247.099.247.219v2.148zm12.33 1.157c0 1.258-2.025 1.232-2.025 1.232H4.49s-4.49.52-4.49-3.79c0-3.327 3.325-4.148 3.325-4.148 1.488-4.218 5.702-4.133 6.945-3.805 1.705-1.503 3.513-.984 3.513-.984 3.197.868 3.013 3.407 3.013 3.407 3.992-.472 5.097 2.651 5.235 3.987.172 1.666-.639 2.91-1.921 3.498-.795.362-1.666.385-1.666.385h-4.321s-.208.232-.208.218v-.002zM13.791 17.65c0 .35-.316.634-.706.634-.388 0-.705-.284-.705-.634V6.208c0-.352.317-.635.705-.635.39 0 .706.283.706.635v11.442h.001zm2.34-.143c0 .285-.251.516-.563.516s-.562-.231-.562-.516V7.034c0-.285.251-.516.562-.516s.563.231.563.516v10.473zM18.234 17.34c0 .229-.208.414-.465.414s-.463-.185-.463-.414V8.583c0-.229.207-.414.463-.414s.465.185.465.414V17.34zm2.146-.388c0 .16-.148.29-.331.29s-.331-.13-.331-.29v-6.904c0-.161.148-.29.331-.29s.331.129.331.29v6.904z"/></svg>`,
+    songs: [
+      { label: 'Fuck Love', sub: 'XXXTentacion', dot: '#FF5500' },
+      { label: 'Lucid Dreams', sub: 'Juice WRLD', dot: '#FF5500' },
+      { label: 'XO TOUR Llif3', sub: 'Lil Uzi Vert', dot: '#FF5500' },
+      { label: 'SAD!', sub: 'XXXTentacion', dot: '#FF5500' },
+    ]
+  }
 ];
 
 export function renderLanding() {
@@ -36,9 +66,9 @@ export function renderLanding() {
     : `<a href="#/login" class="btn btn-ghost">Log In</a>
        <a href="#/register" class="btn btn-primary">Sign Up Free</a>`;
 
-  // First song set rendered initially
-  const firstSet = HERO_SONG_SETS[0];
-  const songItemsHtml = firstSet.map(s => `
+  // First platform rendered initially
+  const firstSet = PLATFORMS[0];
+  const songItemsHtml = firstSet.songs.map(s => `
     <div class="card-link-item">
       <span class="link-dot" style="background:${s.dot};"></span>
       <span class="card-link-song" style="font-size:12px;font-weight:600;flex:1;color:var(--text-primary);">${s.label}</span>
@@ -50,19 +80,22 @@ export function renderLanding() {
     <div class="landing">
       <!-- Navigation -->
       <nav class="landing-nav">
-        <a href="#/" class="landing-logo">
-          ${LOGO_SVG}
-          <span>Music<span class="text-gradient">Link</span></span>
-        </a>
-        <div class="landing-nav-links">
-          <!-- Smooth scroll ke section #features -->
-          <a href="#features" onclick="event.preventDefault(); document.getElementById('features')?.scrollIntoView({behavior:'smooth'})">Features</a>
-          <!-- Arahkan ke halaman Demo -->
-          <a href="#/demo">Demo</a>
-          <a href="#pricing" onclick="event.preventDefault(); document.getElementById('pricing')?.scrollIntoView({behavior:'smooth'})">Pricing</a>
-          <!-- API Docs dibuka di tab baru -->
-          <a href="http://localhost:5000/docs" target="_blank" rel="noopener noreferrer">API Docs</a>
+        <!-- KELOMPOK KIRI: Logo & Menu -->
+        <div style="display: flex; flex-direction: row; align-items: center; gap: 2.5rem;">
+          <a href="#/" class="landing-logo">
+            ${LOGO_SVG}
+            <span>Music<span class="text-gradient">Link</span></span>
+          </a>
+          <div class="landing-nav-links">
+            <!-- Smooth scroll ke section #features -->
+            <a href="#features" onclick="event.preventDefault(); document.getElementById('features')?.scrollIntoView({behavior:'smooth'})">Features</a>
+            <a href="#pricing" onclick="event.preventDefault(); document.getElementById('pricing')?.scrollIntoView({behavior:'smooth'})">Pricing</a>
+            <!-- API Docs dibuka di tab baru -->
+            <a href="http://localhost:5000/docs" target="_blank" rel="noopener noreferrer">API Docs</a>
+          </div>
         </div>
+
+        <!-- KELOMPOK KANAN: Tombol Auth -->
         <div class="landing-nav-actions" id="landing-nav-actions">
           ${navActions}
         </div>
@@ -88,7 +121,7 @@ export function renderLanding() {
                 <i data-lucide="zap" style="width:18px;height:18px;"></i>
                 ${isLoggedIn ? 'Go to Dashboard' : 'Get Started Free'}
               </a>
-              <a href="#/public" class="btn btn-secondary btn-lg">
+              <a href="#/demo" class="btn btn-secondary btn-lg">
                 <i data-lucide="play" style="width:18px;height:18px;"></i>
                 View Demo
               </a>
@@ -111,11 +144,11 @@ export function renderLanding() {
 
           <div class="hero-illustration">
             <!-- Floating Profile Card -->
-            <div class="hero-card hero-card-main">
-              <div class="card-avatar">🎵</div>
-              <div class="card-name">Alex Rivera</div>
-              <div class="card-handle">@alexrivera</div>
-              <div class="card-links" id="hero-card-links" style="transition: opacity 0.4s ease;">
+            <div class="hero-card hero-card-main" id="hero-card-container" style="transition: opacity 0.4s ease;">
+              <div class="card-avatar" id="hero-card-avatar" style="display: flex; align-items: center; justify-content: center; background: transparent; border: none;">${firstSet.logo}</div>
+              <div class="card-name" id="hero-card-name">${firstSet.name}</div>
+              <div class="card-handle" id="hero-card-handle">${firstSet.handle}</div>
+              <div class="card-links" id="hero-card-links">
                 ${songItemsHtml}
               </div>
             </div>
@@ -277,28 +310,38 @@ export function renderLanding() {
 export function initLanding() {
   if (window.lucide) lucide.createIcons();
 
-  // ── Rotating hero card songs ──
+  // ── Rotating hero card platforms ──
   let currentSet = 0;
+  const cardContainer = document.getElementById('hero-card-container');
+  const cardAvatar = document.getElementById('hero-card-avatar');
+  const cardName = document.getElementById('hero-card-name');
+  const cardHandle = document.getElementById('hero-card-handle');
   const cardLinks = document.getElementById('hero-card-links');
 
-  if (cardLinks) {
+  if (cardContainer && cardLinks) {
     setInterval(() => {
       // Fade out
-      cardLinks.style.opacity = '0';
+      cardContainer.style.opacity = '0';
 
       setTimeout(() => {
-        currentSet = (currentSet + 1) % HERO_SONG_SETS.length;
-        const set = HERO_SONG_SETS[currentSet];
-        cardLinks.innerHTML = set.map(s => `
+        currentSet = (currentSet + 1) % PLATFORMS.length;
+        const platform = PLATFORMS[currentSet];
+        
+        cardAvatar.innerHTML = platform.logo;
+        cardName.textContent = platform.name;
+        cardHandle.textContent = platform.handle;
+        
+        cardLinks.innerHTML = platform.songs.map(s => `
           <div class="card-link-item">
             <span class="link-dot" style="background:${s.dot};"></span>
             <span class="card-link-song" style="font-size:12px;font-weight:600;flex:1;color:var(--text-primary);">${s.label}</span>
             <span class="card-link-sub" style="font-size:10px;color:var(--text-tertiary);margin-left:auto;">${s.sub}</span>
           </div>
         `).join('');
+        
         // Fade back in
-        cardLinks.style.opacity = '1';
+        cardContainer.style.opacity = '1';
       }, 400); // Wait for transition
-    }, 3000); // Rotate every 3s
+    }, 3500); // Rotate every 3.5s
   }
 }

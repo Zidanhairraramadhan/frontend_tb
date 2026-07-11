@@ -5,6 +5,7 @@
 import { PLATFORMS } from '../utils/platforms.js';
 import { showToast } from './toast.js';
 import { addLink, updateLink } from '../store.js';
+import { t } from '../utils/translations.js';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
@@ -39,9 +40,9 @@ function initUniversalAutofill() {
     const platformSelect = document.getElementById('link-platform');
     if (platformSelect && platformSelect.value === 'applemusic') {
       preview?.classList.remove('spotify-preview--visible');
-      loadingEl?.classList.remove('spotify-loading--visible'); // Set loading ke false
-      _lastFetchedImageUrl = ''; // Kosongkan image
-      return; // Langsung keluar tanpa nge-fetch
+      loadingEl?.classList.remove('spotify-loading--visible');
+      _lastFetchedImageUrl = '';
+      return;
     }
 
     const isSupported = /spotify\.com|youtube\.com|youtu\.be|soundcloud\.com|music\.apple\.com/.test(url);
@@ -62,11 +63,7 @@ function initUniversalAutofill() {
 
       const data = await res.json();
 
-      // ── Fix #1: Auto-fill judul ──
-      // Timpa nilai input HANYA jika:
-      //   a) metadata punya judul, DAN
-      //   b) field masih kosong ATAU berisi teks default "Listen on ..."
-      //      (bukan ketikan manual user)
+      // Auto-fill judul HANYA jika field masih kosong ATAU berisi teks default "Listen on ..."
       if (data.title) {
         const currentVal = titleInput.value.trim();
         const isDefault  = currentVal === '' || /^Listen on /i.test(currentVal);
@@ -104,7 +101,7 @@ export function openModal(editData = null) {
   if (!root) return;
 
   const isEdit = !!editData;
-  const title = isEdit ? 'Edit Link' : 'Add New Link';
+  const modalTitle = isEdit ? t('editLink') : t('addNewLink');
 
   const platformOptions = Object.entries(PLATFORMS).map(([key, p]) => {
     const selected = editData?.platform === key ? 'selected' : '';
@@ -115,7 +112,7 @@ export function openModal(editData = null) {
     <div class="modal-overlay" id="modal-overlay">
       <div class="modal-content" onclick="event.stopPropagation()">
         <div class="modal-header">
-          <h2 class="modal-title">${title}</h2>
+          <h2 class="modal-title">${modalTitle}</h2>
           <button class="modal-close" id="modal-close-btn">
             <i data-lucide="x"></i>
           </button>
@@ -123,15 +120,15 @@ export function openModal(editData = null) {
 
         <form class="modal-body" id="link-form">
           <div class="input-group">
-            <label for="link-platform">Platform</label>
+            <label for="link-platform">${t('platform')}</label>
             <select class="select" id="link-platform" name="platform" required>
-              <option value="">Pilih platform...</option>
+              <option value="">${t('choosePlatform')}</option>
               ${platformOptions}
             </select>
           </div>
 
           <div class="input-group">
-            <label for="link-url">URL</label>
+            <label for="link-url">${t('url')}</label>
             <div style="position:relative;">
               <input type="url" class="input" id="link-url" name="url"
                 placeholder="https://open.spotify.com/track/..."
@@ -154,14 +151,14 @@ export function openModal(editData = null) {
             <div class="spotify-preview__info">
               <span class="spotify-preview__badge">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                Preview
+                ${t('preview')}
               </span>
               <p id="link-preview-title" class="spotify-preview__title"></p>
             </div>
           </div>
 
           <div class="input-group">
-            <label for="link-title">Judul Tautan</label>
+            <label for="link-title">${t('linkTitle')}</label>
             <input type="text" class="input" id="link-title" name="title"
               placeholder="e.g., Listen on Spotify"
               value="${editData?.title || ''}" required />
@@ -173,9 +170,9 @@ export function openModal(editData = null) {
           </div>
 
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" id="modal-cancel-btn">Cancel</button>
+            <button type="button" class="btn btn-secondary" id="modal-cancel-btn">${t('cancel')}</button>
             <button type="submit" class="btn btn-primary" id="modal-submit-btn">
-              ${isEdit ? 'Save Changes' : 'Add Link'}
+              ${isEdit ? t('save') : t('addLink')}
             </button>
           </div>
         </form>
@@ -237,19 +234,18 @@ export function openModal(editData = null) {
   document.getElementById('modal-close-btn').addEventListener('click', close);
   document.getElementById('modal-cancel-btn').addEventListener('click', close);
 
-  // ── Fix #2: Submit handler — async agar list langsung refresh ──
+  // Submit handler — async agar list langsung refresh
   document.getElementById('link-form').addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const submitBtn = document.getElementById('modal-submit-btn');
-    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Menyimpan...'; }
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = t('saving'); }
 
     const formData = new FormData(e.target);
     const data = {
       platform:  formData.get('platform'),
       title:     formData.get('title'),
       url:       formData.get('url'),
-      // Fix #3 (sumber): simpan image_url dari hasil autofill agar backend bisa menyimpannya
       image_url: _lastFetchedImageUrl || editData?.image_url || '',
       embed:     formData.get('embed') === 'on',
     };
@@ -257,20 +253,23 @@ export function openModal(editData = null) {
     try {
       if (isEdit) {
         await updateLink(editData.id, data);
-        showToast('Link berhasil diperbarui!', 'success');
+        showToast(t('linkUpdated'), 'success');
       } else {
         await addLink(data);
-        showToast('Link berhasil ditambahkan!', 'success');
+        showToast(t('linkAdded'), 'success');
       }
     } catch (err) {
       showToast(err?.message || 'Terjadi kesalahan, coba lagi.', 'error');
-      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = isEdit ? 'Save Changes' : 'Add Link'; }
+      if (submitBtn) { 
+        submitBtn.disabled = false; 
+        submitBtn.textContent = isEdit ? t('save') : t('addLink'); 
+      }
       return; // Jangan tutup modal jika gagal
     }
 
     close();
 
-    // Fix #2: Picu re-render list secara reaktif — tanpa F5
+    // Picu re-render list secara reaktif — tanpa F5
     window.dispatchEvent(new CustomEvent('links-updated'));
   });
 }

@@ -57,7 +57,7 @@ export function initPublicProfile() {
   // Parse username from URL hash: e.g. #/public/alex -> alex
   const hash = window.location.hash;
   let username = 'alex'; // Default fallback demo
-  
+
   if (hash.startsWith('#/public/')) {
     username = hash.replace('#/public/', '').split('?')[0];
   }
@@ -163,7 +163,7 @@ function getAppleMusicEmbedUrl(url) {
 // ── renderLinkItem: titik masuk utama ──
 function renderLinkItem(link, p) {
   const platform = link?.platform?.toLowerCase() || '';
-  const url      = link?.url || '';
+  const url = link?.url || '';
   const shouldEmbed = link.hasOwnProperty('embed') ? link.embed : true;
 
   if (shouldEmbed) {
@@ -198,7 +198,7 @@ function renderLinkItem(link, p) {
         `;
       }
     }
-  
+
     // ── 2. YOUTUBE EMBED ──────────────────────────────────
     if (platform === 'youtube' || url.includes('youtube.com') || url.includes('youtu.be')) {
       const embedUrl = getYouTubeEmbedUrl(url);
@@ -320,18 +320,18 @@ function getAverageColor(imgElement) {
   canvas.width = imgElement.naturalWidth || imgElement.width || 100;
   canvas.height = imgElement.naturalHeight || imgElement.height || 100;
   ctx.drawImage(imgElement, 0, 0, canvas.width, canvas.height);
-  
+
   try {
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
     let r = 0, g = 0, b = 0, count = 0;
     for (let i = 0; i < data.length; i += 40) {
-      if (data[i+3] > 0) {
-        r += data[i]; g += data[i+1]; b += data[i+2]; count++;
+      if (data[i + 3] > 0) {
+        r += data[i]; g += data[i + 1]; b += data[i + 2]; count++;
       }
     }
     if (count === 0) return '#1DB954';
-    return `rgb(${Math.floor(r/count)}, ${Math.floor(g/count)}, ${Math.floor(b/count)})`;
+    return `rgb(${Math.floor(r / count)}, ${Math.floor(g / count)}, ${Math.floor(b / count)})`;
   } catch {
     return '#1DB954';
   }
@@ -339,13 +339,13 @@ function getAverageColor(imgElement) {
 
 function renderActiveProfile(data) {
   // Data Contract: { user: { id, username, role, links }, links: [...] }
-  const user  = data?.user  || {};
+  const user = data?.user || {};
   const links = data?.links || [];
   const container = document.getElementById('public-profile-container');
   if (!container) return;
 
-  const displayName  = user?.username || 'Unknown Artist';
-  const profileUrl   = `${window.location.origin}/#/public/${user?.username || ''}`;
+  const displayName = user?.username || 'Unknown Artist';
+  const profileUrl = `${window.location.origin}/#/public/${user?.username || ''}`;
   const avatarLetter = (user?.username || '?')[0].toUpperCase();
 
   container.innerHTML = `
@@ -374,9 +374,9 @@ function renderActiveProfile(data) {
     <!-- Music Links (button atau Spotify iframe) -->
     <div class="public-links stagger-children">
       ${links.map(link => {
-        const p = getPlatform(link?.platform || '');
-        return renderLinkItem(link, p);
-      }).join('')}
+    const p = getPlatform(link?.platform || '');
+    return renderLinkItem(link, p);
+  }).join('')}
       ${links.length === 0 ? `
         <div style="text-align:center;padding:24px;color:var(--text-tertiary);">
           No links added yet.
@@ -452,7 +452,7 @@ function renderActiveProfile(data) {
           text: `Check out ${displayName}'s music on MusicLink!`,
           url: profileUrl,
         });
-      } catch {}
+      } catch { }
     } else {
       await copyToClipboard(profileUrl);
       showToast('Profile link copied to clipboard!', 'success');

@@ -224,14 +224,4 @@
   }
 }
 
-@media (max-width: 768px) {
-  .profile-form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .profile-avatar-section {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-}
+/* Mobile responsive rules are centralized in styles/mobile.css */
