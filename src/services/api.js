@@ -105,3 +105,21 @@ export async function registerRequest(username, password, name) {
 
   return res.json();
 }
+
+// ── Public Profile API ──
+
+export async function fetchPublicProfile(username) {
+  const res = await fetch(`${API_BASE}/api/public/u/${username}`);
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || 'Profile not found');
+  }
+  return res.json();
+}
+
+export async function trackLinkClick(linkId) {
+  // Asynchronous tracking, no need to await response
+  fetch(`${API_BASE}/api/public/link/${linkId}/click`, {
+    method: 'POST',
+  }).catch((err) => console.error('Failed to track click:', err));
+}

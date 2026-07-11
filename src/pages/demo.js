@@ -111,17 +111,6 @@ export function renderDemo() {
             <i data-lucide="external-link" style="width:16px;height:16px;opacity:0.5;margin-left:auto;"></i>
           </a>
 
-          <a class="demo-link-btn demo-link-tiktok" href="#" onclick="event.preventDefault();">
-            <div class="demo-link-icon">
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V9.17a8.16 8.16 0 0 0 4.77 1.52V7.23a4.85 4.85 0 0 1-1-.54z"/></svg>
-            </div>
-            <div class="demo-link-text">
-              <div class="demo-link-title">TikTok</div>
-              <div class="demo-link-sub">Fan Page & Tribute Clips</div>
-            </div>
-            <i data-lucide="external-link" style="width:16px;height:16px;opacity:0.5;margin-left:auto;"></i>
-          </a>
-
         </div>
 
         <!-- Footer info -->

@@ -80,19 +80,22 @@ export function renderLanding() {
     <div class="landing">
       <!-- Navigation -->
       <nav class="landing-nav">
-        <a href="#/" class="landing-logo">
-          ${LOGO_SVG}
-          <span>Music<span class="text-gradient">Link</span></span>
-        </a>
-        <div class="landing-nav-links">
-          <!-- Smooth scroll ke section #features -->
-          <a href="#features" onclick="event.preventDefault(); document.getElementById('features')?.scrollIntoView({behavior:'smooth'})">Features</a>
-          <!-- Arahkan ke halaman Demo -->
-          <a href="#/demo">Demo</a>
-          <a href="#pricing" onclick="event.preventDefault(); document.getElementById('pricing')?.scrollIntoView({behavior:'smooth'})">Pricing</a>
-          <!-- API Docs dibuka di tab baru -->
-          <a href="http://localhost:5000/docs" target="_blank" rel="noopener noreferrer">API Docs</a>
+        <!-- KELOMPOK KIRI: Logo & Menu -->
+        <div style="display: flex; flex-direction: row; align-items: center; gap: 2.5rem;">
+          <a href="#/" class="landing-logo">
+            ${LOGO_SVG}
+            <span>Music<span class="text-gradient">Link</span></span>
+          </a>
+          <div class="landing-nav-links">
+            <!-- Smooth scroll ke section #features -->
+            <a href="#features" onclick="event.preventDefault(); document.getElementById('features')?.scrollIntoView({behavior:'smooth'})">Features</a>
+            <a href="#pricing" onclick="event.preventDefault(); document.getElementById('pricing')?.scrollIntoView({behavior:'smooth'})">Pricing</a>
+            <!-- API Docs dibuka di tab baru -->
+            <a href="http://localhost:5000/docs" target="_blank" rel="noopener noreferrer">API Docs</a>
+          </div>
         </div>
+
+        <!-- KELOMPOK KANAN: Tombol Auth -->
         <div class="landing-nav-actions" id="landing-nav-actions">
           ${navActions}
         </div>
@@ -118,7 +121,7 @@ export function renderLanding() {
                 <i data-lucide="zap" style="width:18px;height:18px;"></i>
                 ${isLoggedIn ? 'Go to Dashboard' : 'Get Started Free'}
               </a>
-              <a href="#/public" class="btn btn-secondary btn-lg">
+              <a href="#/demo" class="btn btn-secondary btn-lg">
                 <i data-lucide="play" style="width:18px;height:18px;"></i>
                 View Demo
               </a>

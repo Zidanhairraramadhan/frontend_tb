@@ -75,7 +75,11 @@ export function initPublicProfile() {
             <div style="font-size:48px;margin-bottom:16px;">🔍</div>
             <h2 style="font-size:24px;font-weight:700;margin-bottom:8px;">Profile Not Found</h2>
             <p style="color:var(--text-secondary);margin-bottom:24px;">Artist profile "${username}" could not be located in our database.</p>
-            <a href="#/" class="btn btn-primary">Go Home</a>
+            <p style="color:var(--text-primary);font-size:16px;margin-bottom:24px;font-weight:500;">The stage is empty. Want to claim this username for your music?</p>
+            <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+              <a href="#/register" class="btn btn-primary" style="background:#10b981;border:none;box-shadow:0 10px 15px -3px rgba(16,185,129,0.3);">Claim Your MusicLink — Free!</a>
+              <a href="#/demo" class="btn btn-secondary">Lihat Demo</a>
+            </div>
           </div>
         `;
       }
@@ -139,69 +143,74 @@ function renderLinkItem(link, p) {
 
   // ── 1. SPOTIFY EMBED ──────────────────────────────────
   if (platform === 'spotify' || url.includes('spotify.com')) {
-    const embedUrl = getSpotifyEmbedUrl(url);
-    if (embedUrl) {
-      return `
-        <div class="embed-player embed-player--spotify" data-link-id="${link?.id || ''}">
-          <div class="embed-player__header">
-            <div class="embed-player__badge embed-player__badge--spotify">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="#1DB954">
-                <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
-              </svg>
-              Spotify
+    return `
+      <!-- WIDGET SPOTIFY CUSTOM (ANTI-ERROR & ZERO IFRAME) -->
+      <div class="p-4 mt-2 transition-all duration-300 border bg-gradient-to-br from-[#181818] to-[#121212] border-white/10 rounded-2xl shadow-xl hover:border-[#1ED760]/30" data-link-id="${link?.id || ''}">
+        <div class="flex items-center justify-between gap-4">
+          
+          <!-- Info Lagu & Cover Album -->
+          <div class="flex items-center gap-3.5 min-w-0">
+            <div class="relative flex items-center justify-center flex-shrink-0 border w-14 h-14 bg-neutral-800 rounded-xl overflow-hidden shadow-md border-white/5">
+              <!-- Placeholder Cover - Bisa diganti tag <img /> jika ada foto album -->
+              <span class="text-2xl">🔥</span>
             </div>
-            <div class="embed-player__title">${link?.title || 'Untitled'}</div>
-            <a href="${url}" target="_blank" rel="noopener" class="embed-player__open" title="Open in Spotify">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            </a>
+            <div class="min-w-0">
+              <p class="text-sm font-bold tracking-wide text-white truncate">${link?.title || 'California Love'}</p>
+              <p class="mt-0.5 text-xs text-gray-400 truncate">2Pac ft. Dr. Dre • All Eyez On Me</p>
+            </div>
           </div>
-          <iframe
-            src="${embedUrl}"
-            width="100%"
-            height="152"
-            frameborder="0"
-            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-            loading="lazy"
-            style="border-radius:12px;display:block;margin-top:10px;">
-          </iframe>
+
+          <!-- Tombol Play Hijau Spotify -->
+          <a 
+            href="${url}" 
+            target="_blank" 
+            rel="noreferrer"
+            class="flex-shrink-0 flex items-center justify-center w-12 h-12 bg-[#1ED760] text-black rounded-full hover:scale-105 hover:bg-[#1ed760]/90 transition-all duration-200 shadow-lg shadow-[#1ED760]/20 cursor-pointer"
+            title="Putar di Spotify"
+          >
+            <svg class="w-5 h-5 ml-0.5 fill-current" viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+          </a>
+
         </div>
-      `;
-    }
+
+        <!-- Progress Bar Musik Animasi -->
+        <div class="w-full bg-white/10 h-1.5 rounded-full mt-4 overflow-hidden">
+          <div class="bg-[#1ED760] w-1/3 h-full rounded-full animate-pulse"></div>
+        </div>
+      </div>
+    `;
   }
 
   // ── 2. YOUTUBE EMBED ──────────────────────────────────
   if (platform === 'youtube' || url.includes('youtube.com') || url.includes('youtu.be')) {
-    const embedUrl = getYouTubeEmbedUrl(url);
-    if (embedUrl) {
-      return `
-        <div class="embed-player embed-player--youtube" data-link-id="${link?.id || ''}">
-          <div class="embed-player__header">
-            <div class="embed-player__badge embed-player__badge--youtube">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="#FF0000">
-                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-              </svg>
-              YouTube
+    return `
+      <div class="bg-[#181818]/80 backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-xl max-w-md mx-auto w-full mb-4" data-link-id="${link?.id || ''}">
+        <div class="flex items-center justify-between relative z-10">
+          <div class="flex items-center gap-4">
+            <div class="w-14 h-14 rounded-lg shadow-md bg-gray-800 overflow-hidden flex-shrink-0 relative">
+              <img src="https://i.ytimg.com/vi/5wBTdfAkqGU/hqdefault.jpg" alt="Cover" class="w-full h-full object-cover">
             </div>
-            <div class="embed-player__title">${link?.title || 'Untitled'}</div>
-            <a href="${url}" target="_blank" rel="noopener" class="embed-player__open" title="Open in YouTube">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            </a>
+            <div class="flex flex-col justify-center">
+              <span class="text-white font-bold text-base tracking-wide">${link?.title || 'California Love'}</span>
+              <span class="text-gray-400 text-sm mt-0.5">2Pac ft. Dr. Dre</span>
+            </div>
           </div>
-          <div class="embed-player__yt-wrap">
-            <iframe
-              src="${embedUrl}"
-              width="100%"
-              height="100%"
-              frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowfullscreen
-              loading="lazy"
-              style="border-radius:12px;display:block;position:absolute;inset:0;">
-            </iframe>
-          </div>
+          <a href="${url}" target="_blank" rel="noopener noreferrer" class="bg-[#FF0000] text-white p-3.5 rounded-full hover:scale-105 transition-all shadow-lg shadow-[#ff0000]/20 flex items-center justify-center">
+            <i data-lucide="play" class="w-5 h-5 fill-white ml-1"></i>
+          </a>
         </div>
-      `;
-    }
+        <!-- Progress Bar -->
+        <div class="mt-4 flex items-center gap-3 text-xs text-gray-400 font-medium relative z-10">
+          <span>1:24</span>
+          <div class="flex-1 bg-white/10 h-1.5 rounded-full overflow-hidden relative cursor-pointer">
+            <div class="bg-[#FF0000] w-1/3 h-full rounded-full"></div>
+          </div>
+          <span>4:01</span>
+        </div>
+      </div>
+    `;
   }
 
   // ── 3. FALLBACK: Link Card (Apple Music, SoundCloud, Instagram, Website, dll) ──
