@@ -4,7 +4,7 @@
 
 import { renderSidebar, initSidebar } from '../components/sidebar.js';
 import { renderTopnav } from '../components/topnav.js';
-import { getLinks, deleteLink, toggleLinkStatus, syncLinks } from '../store.js';
+import { getLinks, deleteLink, toggleLinkStatus, syncLinks, reorderLinks } from '../store.js';
 import { getPlatform } from '../utils/platforms.js';
 import { formatNumber } from '../utils/helpers.js';
 import { openModal } from '../components/modal.js';
@@ -31,12 +31,16 @@ function renderLinkCards() {
   }
 
   return `
-    <div class="links-grid stagger-children">
+    <div class="links-grid stagger-children" id="links-drag-grid">
       ${links.map(link => {
         const p = getPlatform(link?.platform || '');
         return `
-          <div class="link-card" data-link-id="${link?.id || ''}">
+          <div class="link-card" data-link-id="${link?.id || ''}" draggable="true">
             <div class="link-card-header">
+              <!-- Drag Handle -->
+              <div class="link-card-drag-handle" title="Drag to reorder">
+                <i data-lucide="grip-vertical" style="width:16px;height:16px;"></i>
+              </div>
               <!-- Tampilkan cover album jika ada, fallback ke ikon platform -->
               <div class="link-card-icon" style="background:${p.bgColor};color:${p.color};overflow:hidden;padding:0;">
                 ${link?.image_url
@@ -244,8 +248,64 @@ function refreshLinks() {
     .finally(() => {
       container.innerHTML = renderLinkCards();
       if (window.lucide) lucide.createIcons();
+      initDragAndDrop();
 
       // Re-attach empty state button (muncul setelah render ulang)
       document.getElementById('empty-add-btn')?.addEventListener('click', () => openModal());
     });
+}
+
+/**
+ * Inisialisasi HTML5 Drag & Drop reordering pada grid link
+ */
+function initDragAndDrop() {
+  const grid = document.getElementById('links-drag-grid');
+  if (!grid) return;
+
+  let draggingCard = null;
+
+  grid.addEventListener('dragstart', (e) => {
+    const card = e.target.closest('.link-card');
+    if (!card) return;
+    draggingCard = card;
+    card.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+  });
+
+  grid.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    const card = e.target.closest('.link-card');
+    if (!card || card === draggingCard) return;
+
+    const cards = Array.from(grid.querySelectorAll('.link-card'));
+    const draggingIndex = cards.indexOf(draggingCard);
+    const targetIndex = cards.indexOf(card);
+
+    if (draggingIndex < targetIndex) {
+      grid.insertBefore(draggingCard, card.nextSibling);
+    } else {
+      grid.insertBefore(draggingCard, card);
+    }
+  });
+
+  grid.addEventListener('dragend', async () => {
+    if (!draggingCard) return;
+    draggingCard.classList.remove('dragging');
+    draggingCard = null;
+
+    // Hitung posisi baru dari susunan DOM terkini
+    const cards = Array.from(grid.querySelectorAll('.link-card'));
+    const reorderPayload = cards.map((card, index) => ({
+      id: card.dataset.linkId,
+      position: index
+    }));
+
+    try {
+      await reorderLinks(reorderPayload);
+      showToast(t('linksReordered') || 'Urutan link berhasil diperbarui!', 'success');
+    } catch (err) {
+      showToast(err.message || 'Gagal memperbarui urutan link', 'error');
+      refreshLinks(); // Reset ke urutan awal dari database
+    }
+  });
 }

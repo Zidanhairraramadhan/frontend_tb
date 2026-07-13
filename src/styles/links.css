@@ -215,4 +215,39 @@
   height: 24px;
 }
 
-/* Mobile responsive rules are centralized in styles/mobile.css */
+/* Mobile responsive rules are central in styles/mobile.css */
+
+/* ── Drag & Drop Reordering ── */
+.link-card {
+  position: relative;
+  cursor: default;
+}
+
+.link-card-drag-handle {
+  cursor: grab;
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xs);
+  border-radius: var(--border-radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.link-card-drag-handle:hover {
+  background: var(--bg-glass);
+  color: var(--text-primary);
+}
+
+.link-card-drag-handle:active {
+  cursor: grabbing;
+}
+
+.link-card.dragging {
+  opacity: 0.4;
+  border-style: dashed;
+  border-color: var(--spotify-green);
+  transform: scale(0.98);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+

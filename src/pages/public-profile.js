@@ -345,7 +345,7 @@ function renderActiveProfile(data) {
   if (!container) return;
 
   const displayName = user?.username || 'Unknown Artist';
-  const profileUrl = `${window.location.origin}/#/public/${user?.username || ''}`;
+  const profileUrl = `${window.location.origin}/p/${user?.username || ''}`;
   const avatarLetter = (user?.username || '?')[0].toUpperCase();
 
   container.innerHTML = `
@@ -389,7 +389,7 @@ function renderActiveProfile(data) {
       <div class="public-qr-title">Scan to visit profile</div>
       <div class="public-qr-code" id="public-qr-container"></div>
       <div style="font-size:var(--font-size-xs);color:var(--text-tertiary);margin-top:8px;">
-        musiclink.io/${user?.username || ''}
+        musiclink.io/p/${user?.username || ''}
       </div>
     </div>
 

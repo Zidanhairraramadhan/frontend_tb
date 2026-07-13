@@ -54,6 +54,7 @@ export const translations = {
     linkActivated:   'Link activated',
     linkDeactivated: 'Link deactivated',
     linkDeleted:     'Link deleted',
+    linksReordered:   'Link order updated successfully!',
 
     // ── Profile Page ──
     basicInformation: 'Basic Information',
@@ -188,6 +189,7 @@ export const translations = {
     linkActivated:   'Tautan diaktifkan',
     linkDeactivated: 'Tautan dinonaktifkan',
     linkDeleted:     'Tautan dihapus',
+    linksReordered:   'Urutan tautan berhasil diperbarui!',
 
     // ── Profile Page ──
     basicInformation: 'Informasi Dasar',

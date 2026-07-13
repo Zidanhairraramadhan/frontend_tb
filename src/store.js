@@ -191,6 +191,21 @@ export async function toggleLinkStatus(id) {
   }
 }
 
+export async function reorderLinks(items) {
+  // items = [{id: "uuid", position: 0}, {id: "uuid", position: 1}, ...]
+  await authFetch('/api/links/reorder', {
+    method: 'PUT',
+    body: JSON.stringify(items),
+  });
+  // Update local state positions
+  items.forEach(item => {
+    const link = state.links.find(l => l.id === item.id);
+    if (link) link.position = item.position;
+  });
+  // Reorder state array
+  state.links.sort((a, b) => (a.position || 0) - (b.position || 0));
+}
+
 // ── Public Profile (No Auth Required) ──
 export { fetchPublicProfile, incrementClick };
 
@@ -212,11 +227,82 @@ export function getTotalStats() {
   const totalLinks = state.links.length;
   const totalPlatforms = new Set(state.links.map(l => l?.platform).filter(Boolean)).size;
   const totalClicks = state.links.reduce((sum, l) => sum + (l?.clicks || 0), 0);
-  const totalViews = totalClicks + 1500; // Simulated views
+  const totalViews = totalClicks; // Real data — no more simulation
   return { totalLinks, totalPlatforms, totalClicks, totalViews };
 }
 
-export function getAnalytics() {
+export async function getAnalytics() {
+  if (!isAuthenticated()) {
+    return getDefaultAnalytics();
+  }
+
+  try {
+    // Fetch semua data analitik secara paralel dari backend
+    const [dailyRes, monthlyRes, sourcesRes, summaryRes] = await Promise.all([
+      authFetch('/api/analytics/daily'),
+      authFetch('/api/analytics/monthly'),
+      authFetch('/api/analytics/sources'),
+      authFetch('/api/analytics/summary'),
+    ]);
+
+    // Proses data harian (7 hari terakhir)
+    const dailyData = dailyRes?.daily || [];
+    const weeklyLabels = dailyData.map(d => {
+      const date = new Date(d.date);
+      return date.toLocaleDateString('en-US', { weekday: 'short' });
+    });
+    const weeklyClicks = dailyData.map(d => d.clicks);
+
+    // Proses data bulanan (12 bulan terakhir)
+    const monthlyData = monthlyRes?.monthly || [];
+    const monthlyLabels = monthlyData.map(d => {
+      const [year, month] = d.month.split('-');
+      const date = new Date(parseInt(year), parseInt(month) - 1);
+      return date.toLocaleDateString('en-US', { month: 'short' });
+    });
+    const monthlyClicks = monthlyData.map(d => d.clicks);
+
+    // Proses sumber trafik
+    const trafficSources = (sourcesRes?.sources || []).map(s => ({
+      source: s.source || 'Unknown',
+      percentage: Math.round(s.percentage * 10) / 10,
+      clicks: s.clicks,
+    }));
+
+    // Summary
+    const summary = summaryRes || {};
+    const totalClicks = summary.total_clicks || 0;
+
+    // Top platforms (dari state lokal — sudah ada datanya)
+    const topPlatforms = Object.entries(
+      state.links.reduce((acc, l) => {
+        const key = l?.platform || 'unknown';
+        acc[key] = (acc[key] || 0) + (l?.clicks || 0);
+        return acc;
+      }, {})
+    ).map(([platform, clicks]) => ({ platform, clicks }))
+     .sort((a, b) => b.clicks - a.clicks);
+
+    return {
+      weeklyClicks: weeklyClicks.length ? weeklyClicks : [0],
+      weeklyLabels: weeklyLabels.length ? weeklyLabels : ['Today'],
+      monthlyClicks: monthlyClicks.length ? monthlyClicks : [0],
+      monthlyLabels: monthlyLabels.length ? monthlyLabels : ['This Month'],
+      topPlatforms: topPlatforms.length ? topPlatforms : [{ platform: 'spotify', clicks: 0 }],
+      trafficSources: trafficSources.length ? trafficSources : [{ source: 'Direct', percentage: 100 }],
+      totalClicks,
+      totalViews: totalClicks,
+      mostActiveDay: summary.most_active_day || 'N/A',
+      growthPercentage: Math.round((summary.growth_percentage || 0) * 10) / 10,
+    };
+  } catch (err) {
+    console.error('Failed to fetch analytics:', err);
+    return getDefaultAnalytics();
+  }
+}
+
+// Data default jika fetch gagal atau belum ada data
+function getDefaultAnalytics() {
   const totalClicks = state.links.reduce((sum, l) => sum + (l?.clicks || 0), 0);
   const topPlatforms = Object.entries(
     state.links.reduce((acc, l) => {
@@ -228,22 +314,16 @@ export function getAnalytics() {
    .sort((a, b) => b.clicks - a.clicks);
 
   return {
-    weeklyClicks: [120, 250, 180, 320, 410, 380, 520],
-    weeklyLabels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    monthlyClicks: [1100, 1450, 1800, 2100, 2600, 2200, 2900, 3200, 2800, 3500, 3100, 3800],
-    monthlyLabels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    weeklyClicks: [0],
+    weeklyLabels: ['Today'],
+    monthlyClicks: [0],
+    monthlyLabels: ['This Month'],
     topPlatforms: topPlatforms.length ? topPlatforms : [{ platform: 'spotify', clicks: 0 }],
-    trafficSources: [
-      { source: 'Direct', percentage: 45 },
-      { source: 'Instagram', percentage: 25 },
-      { source: 'Twitter/X', percentage: 15 },
-      { source: 'Google', percentage: 10 },
-      { source: 'Other', percentage: 5 },
-    ],
+    trafficSources: [{ source: 'No data yet', percentage: 100 }],
     totalClicks,
-    totalViews: totalClicks + 1500,
-    mostActiveDay: 'Sunday',
-    growthPercentage: 18.5,
+    totalViews: totalClicks,
+    mostActiveDay: 'N/A',
+    growthPercentage: 0,
   };
 }
 
