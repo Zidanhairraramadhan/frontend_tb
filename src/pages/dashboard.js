@@ -3,12 +3,13 @@
 // =============================================
 
 import { renderSidebar, initSidebar } from '../components/sidebar.js';
-import { renderTopnav } from '../components/topnav.js';
+import { renderTopnav, initTopnavTheme } from '../components/topnav.js';
 import { renderStatCard } from '../components/stat-card.js';
 import { getTotalStats, getActivities, getLinks, syncData, getAnalytics, getUser } from '../store.js';
 import { formatNumber, timeAgo } from '../utils/helpers.js';
 import { getPlatform } from '../utils/platforms.js';
 import { t } from '../utils/translations.js';
+import { exportToPDF } from '../utils/export.js';
 
 export function renderDashboard() {
   const stats = getTotalStats();
@@ -24,7 +25,25 @@ export function renderDashboard() {
 
       <main class="main-content page-enter">
         <h1 class="page-title">${t('dashboardTitle')}</h1>
-        <p class="page-subtitle">${t('dashboardSub')}</p>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:4px;">
+          <p class="page-subtitle" style="margin:0;">${t('dashboardSub')}</p>
+          <!-- Export PDF Button -->
+          <button id="export-pdf-btn" title="Export Analytics Report to PDF" style="
+            display:flex;align-items:center;gap:6px;
+            padding:8px 16px;
+            border-radius:var(--border-radius-sm);
+            background:var(--bg-glass-strong);
+            border:1px solid var(--border-color);
+            color:var(--text-secondary);
+            cursor:pointer;
+            font-size:0.875rem;
+            font-weight:500;
+            transition:all var(--transition-base);
+          ">
+            <i data-lucide="file-down" style="width:16px;height:16px;"></i>
+            Export PDF
+          </button>
+        </div>
 
         <!-- Stats Grid -->
         <div class="stats-grid stagger-children">
@@ -155,6 +174,43 @@ export function renderDashboard() {
 
 export function initDashboard() {
   initSidebar();
+  initTopnavTheme();
+
+  // Export PDF button handler
+  document.getElementById('export-pdf-btn')?.addEventListener('click', async () => {
+    const btn = document.getElementById('export-pdf-btn');
+    const originalText = btn?.innerHTML;
+    if (btn) {
+      btn.innerHTML = '<i data-lucide="loader-circle" style="width:16px;height:16px;"></i> Generating...';
+      btn.disabled = true;
+      if (window.lucide) lucide.createIcons();
+    }
+    try {
+      const analytics = await getAnalytics();
+      const stats = getTotalStats();
+      const links = getLinks();
+      await exportToPDF({
+        title: 'MusicLink Analytics & Links Report',
+        links,
+        summary: {
+          totalLinks: stats.totalLinks,
+          totalClicks: stats.totalClicks,
+          totalPlatforms: stats.totalPlatforms,
+          growthPercentage: analytics.growthPercentage,
+          mostActiveDay: analytics.mostActiveDay,
+        },
+      }, `musiclink-report-${new Date().toISOString().slice(0,10)}`);
+    } catch (err) {
+      console.error('PDF export failed:', err);
+      alert('Gagal export PDF: ' + err.message);
+    } finally {
+      if (btn) {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        if (window.lucide) lucide.createIcons();
+      }
+    }
+  });
 
   // Load database state asynchronously
   syncData().then(async () => {

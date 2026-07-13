@@ -4,7 +4,7 @@
 // =============================================
 
 import { renderSidebar, initSidebar } from '../components/sidebar.js';
-import { renderTopnav } from '../components/topnav.js';
+import { renderTopnav, initTopnavTheme } from '../components/topnav.js';
 import { renderStatCard } from '../components/stat-card.js';
 import { getUser } from '../store.js';
 import { API_BASE } from '../services/api.js';
@@ -195,6 +195,7 @@ export function renderAdminDashboard() {
 
 export function initAdminDashboard() {
   initSidebar();
+  initTopnavTheme();
   
   if (getUser().role !== 'admin') {
     return; // Don't fetch stats if not admin

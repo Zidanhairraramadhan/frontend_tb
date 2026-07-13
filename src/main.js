@@ -19,6 +19,11 @@ import './styles/mobile.css'; // Responsive overrides — must be last
 import { initRouter } from './router.js';
 import { syncData } from './store.js';
 import { playSplashScreen } from './components/splash.js';
+import { initTheme } from './utils/theme.js';
+
+// ── Apply Theme Immediately (before DOMContentLoaded) ──
+// Mencegah Flash of Wrong Theme (FOWT) saat halaman pertama dimuat
+initTheme();
 
 // ── Boot Application ──
 document.addEventListener('DOMContentLoaded', async () => {
@@ -26,3 +31,4 @@ document.addEventListener('DOMContentLoaded', async () => {
   await syncData();
   initRouter();
 });
+

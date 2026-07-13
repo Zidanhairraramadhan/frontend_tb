@@ -3,7 +3,8 @@
 // Tanggung jawab: Komunikasi HTTP dengan backend
 // =============================================
 
-export const API_BASE = 'http://localhost:5000';
+export const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 
 // --- Race Condition Guard ---
 // Flag untuk memastikan logout + redirect hanya terjadi SEKALI

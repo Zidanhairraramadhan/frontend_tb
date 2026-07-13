@@ -1,0 +1,34 @@
+# netlify.toml — Netlify deployment configuration
+
+[build]
+  # Direktori output build Vite
+  publish = "dist"
+  # Command untuk build
+  command = "npm run build"
+
+[build.environment]
+  # Netlify akan membaca env vars dari dashboard
+  # Tambahkan VITE_API_URL di Netlify dashboard → Site settings → Environment variables
+  NODE_VERSION = "18"
+
+# SPA Redirect — Arahkan semua path ke index.html
+# Wajib untuk Single Page Application dengan client-side routing (hash-based)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Security Headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+# Cache static assets
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

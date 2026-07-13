@@ -3,7 +3,7 @@
 // =============================================
 
 import { renderSidebar, initSidebar } from '../components/sidebar.js';
-import { renderTopnav } from '../components/topnav.js';
+import { renderTopnav, initTopnavTheme } from '../components/topnav.js';
 import { getSettings, updateSettings } from '../store.js';
 import { showToast } from '../components/toast.js';
 import { t, getCurrentLang } from '../utils/translations.js';
@@ -197,6 +197,7 @@ export function applyLanguage(lang) {
 
 export function initSettings() {
   initSidebar();
+  initTopnavTheme();
 
   // Language change — re-render seluruh halaman secara reaktif (anti-flicker, anti-redirect)
   const langSelect = document.getElementById('settings-language');

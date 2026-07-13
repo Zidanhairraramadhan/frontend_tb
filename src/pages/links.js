@@ -3,13 +3,14 @@
 // =============================================
 
 import { renderSidebar, initSidebar } from '../components/sidebar.js';
-import { renderTopnav } from '../components/topnav.js';
+import { renderTopnav, initTopnavTheme } from '../components/topnav.js';
 import { getLinks, deleteLink, toggleLinkStatus, syncLinks, reorderLinks } from '../store.js';
 import { getPlatform } from '../utils/platforms.js';
 import { formatNumber } from '../utils/helpers.js';
 import { openModal } from '../components/modal.js';
 import { showToast } from '../components/toast.js';
 import { t } from '../utils/translations.js';
+import { exportToCSV } from '../utils/export.js';
 
 function renderLinkCards() {
   const links = getLinks();
@@ -122,10 +123,17 @@ export function renderLinks() {
               </select>
             </div>
           </div>
-          <button class="btn btn-primary" id="add-link-btn">
-            <i data-lucide="plus" style="width:16px;height:16px;"></i>
-            ${t('addLink')}
-          </button>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <!-- Export CSV Button -->
+            <button class="btn" id="export-csv-btn" title="Export links to CSV" style="background:var(--bg-glass-strong);border:1px solid var(--border-color);color:var(--text-secondary);display:flex;align-items:center;gap:6px;">
+              <i data-lucide="download" style="width:15px;height:15px;"></i>
+              CSV
+            </button>
+            <button class="btn btn-primary" id="add-link-btn">
+              <i data-lucide="plus" style="width:16px;height:16px;"></i>
+              ${t('addLink')}
+            </button>
+          </div>
         </div>
 
         <!-- Links Grid -->
@@ -148,6 +156,7 @@ export function renderLinks() {
 
 export function initLinks() {
   initSidebar();
+  initTopnavTheme();
 
   // Sync links from remote GORM database upon entering
   syncLinks().then(refreshLinks).catch(refreshLinks);
@@ -159,6 +168,29 @@ export function initLinks() {
 
   [addBtn, fabBtn, emptyBtn].forEach(btn => {
     btn?.addEventListener('click', () => openModal());
+  });
+
+  // Export CSV button
+  document.getElementById('export-csv-btn')?.addEventListener('click', () => {
+    const links = getLinks();
+    if (links.length === 0) {
+      showToast('Tidak ada data link untuk diexport.', 'info');
+      return;
+    }
+    exportToCSV(
+      links.map(l => ({
+        id: l.id,
+        title: l.title,
+        platform: l.platform,
+        url: l.url,
+        clicks: l.clicks,
+        status: l.active ? 'Active' : 'Inactive',
+        created_at: l.created_at,
+      })),
+      `musiclink-links-${new Date().toISOString().slice(0,10)}`,
+      ['id', 'title', 'platform', 'url', 'clicks', 'status', 'created_at']
+    );
+    showToast('Links exported to CSV! 📁', 'success');
   });
 
   // Event delegation for edit, delete, toggle

@@ -3,7 +3,7 @@
 // =============================================
 
 import { renderSidebar, initSidebar } from '../components/sidebar.js';
-import { renderTopnav } from '../components/topnav.js';
+import { renderTopnav, initTopnavTheme } from '../components/topnav.js';
 import { getUser, updateUser } from '../store.js';
 import { showToast } from '../components/toast.js';
 import { t } from '../utils/translations.js';
@@ -186,6 +186,7 @@ export function renderProfile() {
 
 export function initProfile() {
   initSidebar();
+  initTopnavTheme();
 
   const form = document.getElementById('profile-form');
   if (form) {

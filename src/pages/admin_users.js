@@ -4,7 +4,7 @@
 // =============================================
 
 import { renderSidebar, initSidebar } from '../components/sidebar.js';
-import { renderTopnav } from '../components/topnav.js';
+import { renderTopnav, initTopnavTheme } from '../components/topnav.js';
 import { getUser, isAuthenticated } from '../store.js';
 import { API_BASE } from '../services/api.js';
 import { showToast } from '../components/toast.js';
@@ -113,10 +113,10 @@ function renderUserTable(users = []) {
 
         <td class="admin-table-cell">
           <div style="display:flex;gap:8px;">
-            <button class="btn btn-secondary" style="padding:4px 12px;font-size:12px;" disabled title="Edit (coming soon)">
+            <button class="btn btn-secondary admin-edit-user-btn" style="padding:4px 12px;font-size:12px;" data-user-id="${u?.id || ''}" data-username="${u?.username || ''}" title="Reset Password">
               <i data-lucide="pencil" style="width:12px;height:12px;"></i>
             </button>
-            <button class="btn" style="padding:4px 12px;font-size:12px;background:rgba(239,68,68,0.1);color:#EF4444;border:1px solid rgba(239,68,68,0.2);" disabled title="Delete (coming soon)">
+            <button class="btn admin-delete-user-btn" style="padding:4px 12px;font-size:12px;background:rgba(239,68,68,0.1);color:#EF4444;border:1px solid rgba(239,68,68,0.2);" data-user-id="${u?.id || ''}" data-username="${u?.username || ''}" title="Hapus Pengguna">
               <i data-lucide="trash-2" style="width:12px;height:12px;"></i>
             </button>
           </div>
@@ -206,7 +206,7 @@ export function renderAdminUsers() {
               <tr class="admin-table-head">
                 <th class="admin-table-th">#</th>
                 <th class="admin-table-th">Pengguna</th>
-                <th class="admin-table-th">Email</th>
+                <th class="admin-table-th">ID Pengguna</th>
                 <th class="admin-table-th">Role</th>
                 <th class="admin-table-th">Terdaftar</th>
                 <th class="admin-table-th">Musik</th>
@@ -331,12 +331,83 @@ export function renderAdminUsers() {
         text-decoration: none;
       }
       .admin-music-url:hover { color: #1DB954; text-decoration: underline; }
+
+      /* ── Admin Modal ── */
+      .admin-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .admin-modal.is-open {
+        display: flex;
+      }
+      .admin-modal-backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(0,0,0,0.6);
+        backdrop-filter: blur(4px);
+      }
+      .admin-modal-content {
+        position: relative;
+        background: #18181b;
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 16px;
+        width: 100%;
+        max-width: 440px;
+        padding: 24px;
+        box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3), 0 10px 10px -5px rgba(0,0,0,0.04);
+        z-index: 1;
+        animation: modalScale 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .admin-modal-content-danger {
+        border-color: rgba(239,68,68,0.2);
+      }
+      @keyframes modalScale {
+        from { transform: scale(0.95); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+      }
+      .admin-modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+      }
+      .admin-modal-header h3 {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0;
+      }
+      .admin-modal-close {
+        background: none;
+        border: none;
+        color: var(--text-tertiary);
+        font-size: 20px;
+        cursor: pointer;
+        transition: color 0.15s;
+      }
+      .admin-modal-close:hover {
+        color: var(--text-primary);
+      }
+      .admin-modal-body {
+        margin-bottom: 20px;
+      }
+      .admin-modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+      }
     </style>
   `;
 }
 
 export function initAdminUsers() {
   initSidebar();
+  initTopnavTheme();
 
   const tbody = document.getElementById('admin-user-tbody');
   const searchInput = document.getElementById('admin-search-input');
@@ -401,6 +472,34 @@ export function initAdminUsers() {
   document.getElementById('admin-search-input')?.addEventListener('input', applyFilters);
   document.getElementById('admin-role-filter')?.addEventListener('change', applyFilters);
   document.getElementById('admin-sort')?.addEventListener('change', applyFilters);
+
+  // Event delegation untuk tombol Edit & Delete
+  tbody?.addEventListener('click', (e) => {
+    const editBtn = e.target.closest('.admin-edit-user-btn');
+    if (editBtn) {
+      const userId = editBtn.dataset.userId;
+      const username = editBtn.dataset.username;
+      showResetPasswordModal(userId, username);
+      return;
+    }
+
+    const deleteBtn = e.target.closest('.admin-delete-user-btn');
+    if (deleteBtn) {
+      const userId = deleteBtn.dataset.userId;
+      const username = deleteBtn.dataset.username;
+      
+      const currentUser = getUser();
+      if (userId === currentUser.id) {
+        showToast('Anda tidak dapat menghapus akun Anda sendiri.', 'error');
+        return;
+      }
+
+      showDeleteUserModal(userId, username, () => {
+        initAdminUsers();
+      });
+      return;
+    }
+  });
 }
 
 // ── Event delegation untuk accordion Musik ──
@@ -428,5 +527,141 @@ function initMusicAccordions() {
         btn.setAttribute('aria-expanded', 'true');
       }
     });
+  });
+}
+
+// ── Custom Premium Admin Modals ──
+function showResetPasswordModal(userId, username) {
+  const modalId = 'admin-reset-pw-modal';
+  let modal = document.getElementById(modalId);
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = modalId;
+    modal.className = 'admin-modal';
+    document.body.appendChild(modal);
+  }
+
+  modal.innerHTML = `
+    <div class="admin-modal-backdrop"></div>
+    <div class="admin-modal-content">
+      <div class="admin-modal-header">
+        <h3>Reset Password untuk @${username}</h3>
+        <button class="admin-modal-close">&times;</button>
+      </div>
+      <div class="admin-modal-body">
+        <label style="display:block;margin-bottom:8px;font-size:13px;color:var(--text-secondary);">Masukkan Password Baru (Min 6 karakter):</label>
+        <input type="password" id="admin-new-password" class="input" style="width:100%;margin-bottom:16px;" placeholder="Password baru" />
+      </div>
+      <div class="admin-modal-footer">
+        <button class="btn btn-secondary admin-modal-cancel">Batal</button>
+        <button class="btn btn-primary admin-modal-submit" style="background:#8B5CF6;border-color:#8B5CF6;">Reset Password</button>
+      </div>
+    </div>
+  `;
+
+  modal.classList.add('is-open');
+
+  const close = () => modal.classList.remove('is-open');
+  modal.querySelector('.admin-modal-close').addEventListener('click', close);
+  modal.querySelector('.admin-modal-cancel').addEventListener('click', close);
+  modal.querySelector('.admin-modal-backdrop').addEventListener('click', close);
+
+  modal.querySelector('.admin-modal-submit').addEventListener('click', async () => {
+    const passwordInput = document.getElementById('admin-new-password');
+    const newPassword = passwordInput.value.trim();
+    if (newPassword.length < 6) {
+      showToast('Password baru harus minimal 6 karakter.', 'error');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${API_BASE}/api/admin/users/${userId}/password`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ new_password: newPassword }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Gagal mengubah password.');
+
+      showToast(data.message || 'Password berhasil diubah!', 'success');
+      close();
+    } catch (err) {
+      showToast(err.message, 'error');
+    }
+  });
+}
+
+function showDeleteUserModal(userId, username, onDeleteSuccess) {
+  const modalId = 'admin-delete-user-modal';
+  let modal = document.getElementById(modalId);
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = modalId;
+    modal.className = 'admin-modal';
+    document.body.appendChild(modal);
+  }
+
+  modal.innerHTML = `
+    <div class="admin-modal-backdrop"></div>
+    <div class="admin-modal-content admin-modal-content-danger">
+      <div class="admin-modal-header">
+        <h3>Hapus Pengguna @${username}</h3>
+        <button class="admin-modal-close">&times;</button>
+      </div>
+      <div class="admin-modal-body">
+        <p style="margin-bottom:16px;font-size:14px;color:var(--text-secondary);line-height:1.5;">
+          Apakah Anda yakin ingin menghapus pengguna <strong style="color:var(--text-primary);">@${username}</strong>? 
+          Tindakan ini permanen dan akan menghapus semua link serta log klik pengguna tersebut.
+        </p>
+        <p style="margin-bottom:16px;font-size:13px;color:#EF4444;font-weight:600;">
+          Ketik <strong>CONFIRM</strong> di bawah ini untuk melanjutkan:
+        </p>
+        <input type="text" id="admin-delete-confirm" class="input" style="width:100%;margin-bottom:16px;border-color:rgba(239,68,68,0.3);" placeholder="Ketik CONFIRM" />
+      </div>
+      <div class="admin-modal-footer">
+        <button class="btn btn-secondary admin-modal-cancel">Batal</button>
+        <button class="btn admin-modal-submit" style="background:#EF4444;border-color:#EF4444;color:#fff;">Hapus Pengguna</button>
+      </div>
+    </div>
+  `;
+
+  modal.classList.add('is-open');
+
+  const close = () => modal.classList.remove('is-open');
+  modal.querySelector('.admin-modal-close').addEventListener('click', close);
+  modal.querySelector('.admin-modal-cancel').addEventListener('click', close);
+  modal.querySelector('.admin-modal-backdrop').addEventListener('click', close);
+
+  modal.querySelector('.admin-modal-submit').addEventListener('click', async () => {
+    const confirmInput = document.getElementById('admin-delete-confirm');
+    if (confirmInput.value.trim() !== 'CONFIRM') {
+      showToast('Konfirmasi tidak cocok. Silakan ketik CONFIRM.', 'error');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${API_BASE}/api/admin/users/${userId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Gagal menghapus pengguna.');
+
+      showToast(data.message || 'Pengguna berhasil dihapus!', 'success');
+      close();
+      if (onDeleteSuccess) onDeleteSuccess();
+    } catch (err) {
+      showToast(err.message, 'error');
+    }
   });
 }

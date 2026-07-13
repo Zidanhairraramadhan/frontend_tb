@@ -444,7 +444,7 @@ function renderActiveProfile(data) {
   }
 
   // Bind Share Buttons
-  document.getElementById('btn-share-profile')?.addEventListener('click', async () => {
+  document.getElementById('share-btn')?.addEventListener('click', async () => {
     if (navigator.share) {
       try {
         await navigator.share({
