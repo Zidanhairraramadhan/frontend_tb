@@ -329,13 +329,18 @@ object {
   }
 
   .auth-page {
-    padding: var(--space-sm);
-    align-items: flex-end;
+    padding: var(--space-md);
+    align-items: center; /* Diposisikan ke tengah (center) agar aman jika layar di-rotate / horizontal */
+    min-height: 100vh;
+    display: flex;
+    overflow-y: auto;
   }
-
+ 
   .auth-card {
-    border-radius: var(--border-radius-xl) var(--border-radius-xl) 0 0;
-    padding: var(--space-lg) var(--space-md);
+    border-radius: var(--border-radius-xl); /* Rounded di semua sisi agar modern */
+    padding: var(--space-xl) var(--space-md);
+    margin: auto;
+    width: 100%;
   }
 
   .topnav {

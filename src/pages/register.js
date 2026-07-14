@@ -47,14 +47,20 @@ export function renderRegister() {
           <div class="input-group">
             <div style="position:relative;">
               <i data-lucide="lock" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--text-tertiary);pointer-events:none;"></i>
-              <input type="password" class="input" style="padding-left:44px;" id="register-password" placeholder="Password (min 6 chars)" required minlength="6" />
+              <input type="password" class="input" style="padding-left:44px;padding-right:44px;" id="register-password" placeholder="Password (min 6 chars)" required minlength="6" />
+              <button type="button" class="toggle-password-btn" data-target="register-password" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--text-tertiary);background:none;border:none;cursor:pointer;padding:0;display:flex;align-items:center;transition:color 0.2s;" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-tertiary)'">
+                <i data-lucide="eye" style="width:18px;height:18px;"></i>
+              </button>
             </div>
           </div>
 
           <div class="input-group">
             <div style="position:relative;">
               <i data-lucide="lock" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--text-tertiary);pointer-events:none;"></i>
-              <input type="password" class="input" style="padding-left:44px;" id="register-confirm" placeholder="Confirm password" required />
+              <input type="password" class="input" style="padding-left:44px;padding-right:44px;" id="register-confirm" placeholder="Confirm password" required />
+              <button type="button" class="toggle-password-btn" data-target="register-confirm" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--text-tertiary);background:none;border:none;cursor:pointer;padding:0;display:flex;align-items:center;transition:color 0.2s;" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-tertiary)'">
+                <i data-lucide="eye" style="width:18px;height:18px;"></i>
+              </button>
             </div>
           </div>
 
@@ -79,6 +85,26 @@ export function renderRegister() {
 }
 
 export function initRegister() {
+  // Toggle password visibility
+  const toggleBtns = document.querySelectorAll('.toggle-password-btn');
+  toggleBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetId = btn.dataset.target;
+      const input = document.getElementById(targetId);
+      if (input) {
+        const isPassword = input.type === 'password';
+        input.type = isPassword ? 'text' : 'password';
+        
+        // Update Lucide icon
+        const icon = btn.querySelector('i[data-lucide]');
+        if (icon) {
+          icon.setAttribute('data-lucide', isPassword ? 'eye-off' : 'eye');
+          if (window.lucide) lucide.createIcons();
+        }
+      }
+    });
+  });
+
   const form = document.getElementById('register-form');
   if (form) {
     form.addEventListener('submit', async (e) => {
