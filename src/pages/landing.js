@@ -2,6 +2,8 @@
 // Landing Page
 // =============================================
 
+import { API_BASE } from '../services/api.js';
+
 const LOGO_SVG = `<svg viewBox="0 0 64 64" width="32" height="32" style="flex-shrink:0;"><defs><linearGradient id="noteGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#1DB954"/><stop offset="100%" style="stop-color:#14b8a6"/></linearGradient><linearGradient id="linkGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#8B5CF6"/><stop offset="100%" style="stop-color:#6366F1"/></linearGradient></defs><rect x="2" y="2" width="60" height="60" rx="16" fill="#121212" stroke="rgba(255,255,255,0.08)" stroke-width="1.5"/><rect x="18" y="34" width="12" height="18" rx="6" fill="none" stroke="url(#noteGrad)" stroke-width="4.5" transform="rotate(-15 24 43)"/><rect x="34" y="30" width="12" height="18" rx="6" fill="none" stroke="url(#linkGrad)" stroke-width="4.5" transform="rotate(-15 40 39)"/><path d="M28 36V17" stroke="url(#noteGrad)" stroke-width="4" stroke-linecap="round"/><path d="M44 32V13" stroke="url(#linkGrad)" stroke-width="4" stroke-linecap="round"/><path d="M28 17C34 15 38 15 44 13" stroke="url(#linkGrad)" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M28 23C34 21 38 21 44 19" stroke="url(#noteGrad)" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`;
 
 // ── Rotating platform playlists for hero card ──
@@ -90,8 +92,8 @@ export function renderLanding() {
             <!-- Smooth scroll ke section #features -->
             <a href="#features" onclick="event.preventDefault(); document.getElementById('features')?.scrollIntoView({behavior:'smooth'})">Features</a>
             <a href="#pricing" onclick="event.preventDefault(); document.getElementById('pricing')?.scrollIntoView({behavior:'smooth'})">Pricing</a>
-            <!-- API Docs dibuka di tab baru -->
-            <a href="http://localhost:5000/docs" target="_blank" rel="noopener noreferrer">API Docs</a>
+            <!-- API Docs dinamis (mengarah ke localhost saat dev, dan Railway saat prod) -->
+            <a href="${API_BASE}/docs/" target="_blank" rel="noopener noreferrer">API Docs</a>
           </div>
         </div>
 
